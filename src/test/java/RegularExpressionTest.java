@@ -1,4 +1,5 @@
-import com.chhabras.utilities.Parser;
+import com.chhabras.parser.impl.LidlParser;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertTrue;
@@ -6,10 +7,17 @@ import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 
 public class RegularExpressionTest {
+    LidlParser parser;
+
+    @BeforeMethod
+    public void setUp(){
+        LidlParser parser = new LidlParser();
+        this.parser = parser;
+    }
     @Test
     public void test_segregater() {
         String input = "Bio Zwiebel rot 500g 1,25 x 2 2,50 A";
-        String [] arr  =  Parser.segregate(input);
+        String [] arr  =  parser.segregate(input);
         //assertEquals("Bio Zwiebel rot 500g", arr[0]);
         assertEquals("2,50", arr[1]);
     }
@@ -17,7 +25,7 @@ public class RegularExpressionTest {
     @Test
     public void test_pricesInItem() {
         String input = "Bio Zwiebel rot 500g 1,25 x 2 2,50 A";
-        assertTrue(Parser.hasPrice(input));
+        assertTrue(parser.hasPrice(input));
     }
 
     @Test
@@ -26,10 +34,10 @@ public class RegularExpressionTest {
         String input2 = "Bio Zwiebel rot 50 g 1,25 x 2 2,50 A";
         String input3 = "Bio Zwiebel rot 1 Kg 1,25 x 2 2,50 A";
         String input4 = "Bio Zwiebel rot 1 KG 1,25 x 2 2,50 A";
-        assertEquals("500g", Parser.getWeight(input1));
-        assertEquals("50 g", Parser.getWeight(input2));
-        assertEquals("1 Kg", Parser.getWeight(input3));
-        assertEquals("1 KG", Parser.getWeight(input4));
+        assertEquals("500g", parser.getWeight(input1));
+        assertEquals("50 g", parser.getWeight(input2));
+        assertEquals("1 Kg", parser.getWeight(input3));
+        assertEquals("1 KG", parser.getWeight(input4));
     }
 
     @Test
@@ -38,10 +46,10 @@ public class RegularExpressionTest {
         String input2 = "Bio Zwiebel rot 50 g 0,25 x 10 2,50 A";
         String input3 = "Bio Zwiebel rot 1 Kg 10,25 x 2 2,50 A";
         String input4 = "Bio Zwiebel rot 1 KG 12,25 x 22 2,50 A";
-        assertEquals("1,25 x 2", Parser.getQuantity(input1));
-        assertEquals("0,25 x 10", Parser.getQuantity(input2));
-        assertEquals("10,25 x 2", Parser.getQuantity(input3));
-        assertEquals("12,25 x 22", Parser.getQuantity(input4));
+        assertEquals("1,25 x 2", parser.getQuantity(input1));
+        assertEquals("0,25 x 10", parser.getQuantity(input2));
+        assertEquals("10,25 x 2", parser.getQuantity(input3));
+        assertEquals("12,25 x 22", parser.getQuantity(input4));
     }
 
     @Test
@@ -53,13 +61,13 @@ public class RegularExpressionTest {
         String input5 = "Bio Zwiebel rot 1 KG 1334,50 A";
         String input6 = "0,97 ";
         String input7 = "0,97 BW ";
-       assertTrue(Parser.hasPrice(input1));
-       assertFalse(Parser.hasPrice(input2));
-       assertFalse(Parser.hasPrice(input3));
-        assertTrue(Parser.hasPrice(input4));
-        //assertFalse(Parser.hasPrice(input5));
-        assertFalse(Parser.hasPrice(input6));
-        assertTrue(Parser.hasPrice(input7));
+       assertTrue(parser.hasPrice(input1));
+       assertFalse(parser.hasPrice(input2));
+       assertFalse(parser.hasPrice(input3));
+        assertTrue(parser.hasPrice(input4));
+        //assertFalse(parser.hasPrice(input5));
+        assertFalse(parser.hasPrice(input6));
+        assertTrue(parser.hasPrice(input7));
     }
 
     @Test
@@ -68,8 +76,8 @@ public class RegularExpressionTest {
         String input2 = "2,50";
         String input3 = "-2,50";
 
-        assertTrue(Parser.isPrice(input1));
-        assertFalse(Parser.isPrice(input2));
-        assertTrue(Parser.isPrice(input3));
+        assertTrue(parser.isPrice(input1));
+        assertFalse(parser.isPrice(input2));
+        assertTrue(parser.isPrice(input3));
     }
 }
