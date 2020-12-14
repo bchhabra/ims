@@ -1,3 +1,4 @@
+import com.chhabras.parser.impl.DmParser;
 import com.chhabras.parser.impl.LidlParser;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -8,11 +9,14 @@ import static org.testng.AssertJUnit.assertFalse;
 
 public class RegularExpressionTest {
     LidlParser parser;
+    DmParser dmparser;
 
     @BeforeMethod
     public void setUp(){
         LidlParser parser = new LidlParser();
+        DmParser dmparser = new DmParser();
         this.parser = parser;
+        this.dmparser = dmparser;
     }
     @Test
     public void test_segregater() {
@@ -79,5 +83,16 @@ public class RegularExpressionTest {
         assertTrue(parser.isPrice(input1));
         assertFalse(parser.isPrice(input2));
         assertTrue(parser.isPrice(input3));
+    }
+
+    @Test
+    public void test_dm_isPrice() {
+        String input1 = "2,50 1";
+        String input2 = "2,50";
+        String input3 = "-2,50";
+
+        assertTrue(dmparser.isPrice(input1));
+        assertTrue(dmparser.isPrice(input2));
+        assertTrue(dmparser.isPrice(input3));
     }
 }

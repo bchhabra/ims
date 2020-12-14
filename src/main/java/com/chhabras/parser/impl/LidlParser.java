@@ -2,13 +2,56 @@ package com.chhabras.parser.impl;
 
 import com.chhabras.entities.Item;
 import com.chhabras.parser.AbstractParser;
-import com.chhabras.utilities.ListUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LidlParser extends AbstractParser {
+
+    @Override
+    public int endPointer(List<String> mainList) {
+        int i = 0;
+        for (i = 0; i < mainList.size(); i++) {
+            if (mainList.get(i).contains("zu zahlen") | mainList.get(i).contains("MwStd")) {
+                break;
+            }
+        }
+        return i;
+    }
+
+    @Override
+    public boolean excludeBasedOnRegex(String text) {
+        String regex = "\\d{1,2}(,|.)\\d{1,2}|\\d x";
+        return !text.matches(regex);
+    }
+
+    @Override
+    public boolean excludeBasedOnString(String text) {
+        List<String> excludeList = new ArrayList<>();
+        excludeList.add("EUR/kg");
+        excludeList.add("Tel: 089");
+        excludeList.add("EUR");
+        excludeList.add("Kirchheim");
+        excludeList.add("85551");
+        excludeList.add("Frauenhoferstr");
+        excludeList.add("LIDL");
+        excludeList.add("Lebensmittelspezialisten");
+        excludeList.add("Lebensmitelspeciailstent");
+        excludeList.add("Fraunhoferstraße");
+        excludeList.add("90129219");
+        excludeList.add("edeka");
+        excludeList.add("EDEKA");
+        excludeList.add("kg");
+        excludeList.add("Posten");
+        for (String str : excludeList) {
+            if (text.contains(str)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
     public boolean validate(List<Item> items) {

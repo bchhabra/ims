@@ -1,5 +1,11 @@
 package com.chhabras.request;
 
+import com.chhabras.parser.impl.DmParser;
+import com.chhabras.parser.impl.EdekaParser;
+import com.chhabras.parser.impl.KauflandParser;
+import com.chhabras.parser.Parser;
+import com.chhabras.parser.impl.ReweParser;
+import com.chhabras.parser.impl.LidlParser;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
@@ -20,7 +26,7 @@ public class GoogleVisionRequest {
         this.file = file;
     }
 
-    public String detectText() throws Exception {
+    public String rawText() throws Exception {
         List<AnnotateImageRequest> requests = new ArrayList<>();
         ByteString imgBytes = ByteString.readFrom(GoogleVisionRequest.class.getClassLoader().getResourceAsStream("images/"+file));
 
@@ -41,6 +47,28 @@ public class GoogleVisionRequest {
             //printAllResponses(responses);
         }
     }
+
+    public Parser decider(String text) throws Exception {
+
+        if (text.toLowerCase().contains("lidl")){
+            System.out.println("lidl Parser ");
+            return new LidlParser();
+        }else if(text.toLowerCase().contains("edeka")){
+            System.out.println("edeka Parser ");
+            return new EdekaParser();
+        }else if (text.toLowerCase().contains("rewe")){
+            System.out.println("rewe Parser ");
+            return new ReweParser();
+        }else if (text.toLowerCase().contains("drogerie") || text.toLowerCase().contains("drogerle")){
+            System.out.println("dm Parser ");
+            return new DmParser();
+        }else if (text.toLowerCase().contains("kaufland")){
+            System.out.println("kaufland Parser ");
+            return new KauflandParser();
+        }
+        return null;
+    }
+
 
     private void printAllResponses(List<AnnotateImageResponse> responses) {
         for (AnnotateImageResponse res : responses) {

@@ -1,4 +1,5 @@
 import com.chhabras.entities.Item;
+import com.chhabras.parser.Parser;
 import com.chhabras.parser.impl.LidlParser;
 import com.chhabras.request.GoogleVisionRequest;
 import org.testng.annotations.Test;
@@ -23,7 +24,7 @@ public class OCRSampleTest {
 
     private void all(String file, int count) throws Exception {
         GoogleVisionRequest request = new GoogleVisionRequest(file);
-        String rawvalue = request.detectText();
+        String rawvalue = request.rawText();
         LidlParser parser = new LidlParser();
         List<Item> items = parser.parse(rawvalue);
 
@@ -31,5 +32,17 @@ public class OCRSampleTest {
             System.out.println(i.getName()+" : "+i.getPrice());
         }
         assertEquals(count,items.size());
+    }
+
+    @Test
+    public void testme() throws Exception {
+        String file = "dm01.jpg";
+        GoogleVisionRequest request = new GoogleVisionRequest(file);
+        String rawvalue = request.rawText();
+        Parser parser = request.decider(rawvalue);
+        List<Item> items = parser.parse(rawvalue);
+        for(Item i : items) {
+            System.out.println(i.getName()+" : "+i.getPrice());
+        }
     }
 }
