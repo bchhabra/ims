@@ -70,6 +70,9 @@ public class LidlParser extends AbstractParser {
             if (item.getName().matches(regex)) {
                 results.add(item.getPrice().startsWith("-"));
             }
+            if(item.getPrice() == null){
+                results.add(false);
+            }
         }
         if (results.contains(false)) {
             return false;

@@ -1,5 +1,6 @@
 package com.chhabras.parser.impl;
 
+import com.chhabras.entities.Item;
 import com.chhabras.parser.AbstractParser;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,8 @@ public class EdekaParser extends AbstractParser {
         String regex1 = "\\d{1,2} x";
         String regex2 = "\\d{1,2},\\d{1,2}";
         String regex3 = "Tel(\\.|:|\\s)?(\\s)?089(.*)";
-        if (text.matches(regex1)|| text.matches(regex2)|| text.matches(regex3)) {
+        String regex4 = "\\d{4} (.*)";
+        if (text.matches(regex1)|| text.matches(regex2)|| text.matches(regex3)|| text.matches(regex4)) {
             System.out.println(" ###REGREX### " + text);
             return false;
         }
@@ -33,10 +35,13 @@ public class EdekaParser extends AbstractParser {
     public boolean excludeBasedOnString(String text) {
         List<String> excludeList = new ArrayList<>();
         excludeList.add("Fraunhoferstraße 1");
+        excludeList.add("Fraunhofer");
         excludeList.add("Kirchheim");
         excludeList.add("kirchheim");
+        excludeList.add("85551");
         excludeList.add("DEKA");
         excludeList.add("EBEKA");
+        excludeList.add("EDRKA");
         excludeList.add("Lebensmitelspeciailstent");
         excludeList.add("Tel. 089");
         excludeList.add("Tel: 089");
@@ -45,11 +50,26 @@ public class EdekaParser extends AbstractParser {
         excludeList.add("Posten:");
         for (String str : excludeList) {
             if (text.contains(str)) {
-                System.out.println("###STRING### " + text);
+                System.out.println(" ###STRING### " + text);
                 return false;
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean validate(List<Item> items) {
+        List<Boolean> results = new ArrayList<>();
+        for (Item item : items) {
+            if(item.getPrice() == null){
+                results.add(false);
+            }
+        }
+        if (results.contains(false)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @Override
