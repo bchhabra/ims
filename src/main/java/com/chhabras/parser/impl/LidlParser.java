@@ -23,8 +23,17 @@ public class LidlParser extends AbstractParser {
 
     @Override
     public boolean excludeBasedOnRegex(String text) {
-        String regex = "\\d{1,2}(,|.)\\d{1,2}|\\d x";
-        return !text.matches(regex);
+        String regex1 = "\\d{1,2}(,|.)\\d{1,2} x(\\s\\d+)?";
+        String regex2 = "\\d{0,2}(,|.)\\d{1,3} kg x \\d{0,2}(,|.)\\d{1,2} EUR/kg";
+        if (text.matches(regex1)) {
+            System.out.println("###REGREX1### " + text);
+            return false;
+        }
+        if (text.matches(regex2)) {
+            System.out.println("###REGREX2### " + text);
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -43,10 +52,10 @@ public class LidlParser extends AbstractParser {
         excludeList.add("90129219");
         excludeList.add("edeka");
         excludeList.add("EDEKA");
-        excludeList.add("kg");
         excludeList.add("Posten");
         for (String str : excludeList) {
             if (text.contains(str)) {
+                System.out.println("###STRING### " + text);
                 return false;
             }
         }
@@ -55,18 +64,18 @@ public class LidlParser extends AbstractParser {
 
     @Override
     public boolean validate(List<Item> items) {
-        return super.validate(items);
-    }
-
-    @Override
-    public boolean isPrice(String text) {
-        boolean flag = false;
-        if (text.startsWith("-")) {
-            flag = text.matches("^(-)(.)?\\d{0,3}(\\,\\s?\\d{1,2})?\\s?\\*?(A|B|BW|A,)?\\s?");
-        } else {
-            flag = text.matches("^(-)?(.)?\\d{0,3}(\\,\\s?\\d{1,2})?\\s?\\*?(A|B|BW|A,)\\s?");
+        String regex = "^pfandrückgabe(.*)|^RABATT(.*)";
+        List<Boolean> results = new ArrayList<>();
+        for (Item item : items) {
+            if (item.getName().matches(regex)) {
+                results.add(item.getPrice().startsWith("-"));
+            }
         }
-        return flag;
+        if (results.contains(false)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @Override
@@ -76,6 +85,10 @@ public class LidlParser extends AbstractParser {
 
     @Override
     public String[] segregate(String text) {
+        /*
+            Bio Rindergulasch 4,36 A
+            Rindersuppenfleisch 3,97A
+         */
         String[] arr = new String[2];
         Pattern pattern = Pattern.compile("(.*?)(\\d+,\\d+)(\\s?(A|B|BW))");
         Matcher matcher = pattern.matcher(text);
@@ -107,7 +120,7 @@ public class LidlParser extends AbstractParser {
     }
 
     @Override
-    public String removeExtras(String text) {
+    public String removeWeightandQuantity(String text) {
         String weight = getWeight(text);
         if (weight != null) {
             text = text.replaceAll(weight, "");
@@ -116,16 +129,17 @@ public class LidlParser extends AbstractParser {
         if (quantity != null) {
             text = text.replaceAll(quantity, "");
         }
-        return text;
+        return text.trim();
     }
 
     @Override
     public String refinePrice(String text) {
-        if (text.endsWith(" A") | text.endsWith(" B") | text.endsWith(" BW") | text.endsWith(" A,")) {
-            text = text.split("\\s")[0];
+        if (text.startsWith(".") && text.matches("(-)?(\\.)?\\d{0,3},\\d{0,2}(\\s)(B|BW|A|A,)")) {
+            text = text.substring(1);
+            return text.split("\\s")[0];
         }
-        if (text.endsWith("*A") | text.endsWith("*B") | text.endsWith("*BW") | text.endsWith("*A,")) {
-            text = text.split("\\*")[0];
+        if (text.matches("^(-)?(\\.)?\\d{0,3},\\d{0,2}(\\s|\\*)(B|BW|A|A,)")) {
+                return text.split("\\s")[0];
         }
         return text;
     }

@@ -50,37 +50,6 @@ public class DmParser extends AbstractParser {
     }
 
     @Override
-    public boolean isPrice(String text) {
-        return text.matches("^(-)?(.)?\\d{0,3}(\\,\\s?\\d{1,2})?\\s?(1|2)?\\s?");
-    }
-
-    @Override
-    public boolean hasPrice(String text) {
-        return text.matches("(.*?)(\\d{0,3},\\s?\\d{0,2})(.*?)(1|2)\\s?");
-
-    }
-
-    @Override
-    public String[] segregate(String text) {
-        return new String[0];
-    }
-
-    @Override
-    public String getWeight(String text) {
-        return text;
-    }
-
-    @Override
-    public String getQuantity(String text) {
-        return text;
-    }
-
-    @Override
-    public String removeExtras(String text) {
-        return text;
-    }
-
-    @Override
     public String refinePrice(String text) {
         return text;
     }

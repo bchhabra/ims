@@ -23,36 +23,6 @@ public class KauflandParser extends AbstractParser {
     }
 
     @Override
-    public boolean isPrice(String text) {
-        return false;
-    }
-
-    @Override
-    public boolean hasPrice(String text) {
-        return false;
-    }
-
-    @Override
-    public String[] segregate(String text) {
-        return new String[0];
-    }
-
-    @Override
-    public String getWeight(String text) {
-        return null;
-    }
-
-    @Override
-    public String getQuantity(String text) {
-        return null;
-    }
-
-    @Override
-    public String removeExtras(String text) {
-        return null;
-    }
-
-    @Override
     public String refinePrice(String text) {
         return null;
     }

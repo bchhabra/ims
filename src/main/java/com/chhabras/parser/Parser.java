@@ -7,18 +7,17 @@ import java.util.List;
 public interface Parser {
         List<Item> parse(String input);
         int endPointer(List<String> mainList);
-        default boolean excludeBasedOnRegex(String text){
-                return false;
-        }
-        default boolean excludeBasedOnString(String text){
-                return false;
-        }
+        boolean excludeBasedOnRegex(String text);
+        boolean excludeBasedOnString(String text);
         boolean validate(List<Item> items);
-        boolean isPrice(String text);
+        /*
+        hasPrice and segregate should work together.
+        hasPrice will be used to check if string contains product and price both and later segregate them
+         */
         boolean hasPrice(String text);
         String[] segregate(String text);
         String getWeight(String text);
         String getQuantity(String text);
-        String removeExtras(String text);
+        String removeWeightandQuantity(String text);
         String refinePrice(String text);
 }

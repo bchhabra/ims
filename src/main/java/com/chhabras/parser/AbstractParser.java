@@ -8,39 +8,31 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class AbstractParser implements Parser{
-
-
-    @Override
-    public boolean validate(List<Item> items) {
-        return false;
-    }
+public abstract class AbstractParser implements Parser {
 
     @Override
-    public List<Item> parse(String input){
+    public List<Item> parse(String input) {
         List<String> mainList = convert2ListOfString(input);
         List<String> operationalList = filterList(mainList);
-       // printList(mainList);
-        System.out.println("##################################");
-        //printList(operationalList);
+        // printList(mainList);
+        System.out.println("########### OperationalList After###########");
+        printList(operationalList);
         List<Item> items = new ArrayList<>();
 
         for (String str : operationalList) {
             Item it;
             if (isPrice(str)) {
                 it = PriceUtils.findFirstItemWithoutPrice(items);
-                String pr = refinePrice(str);
                 if (it != null) {
-                    PriceUtils.setPrice(it, pr);
+                    PriceUtils.setPrice(it, str);
                 } else {
-                    it = new Item(null, pr);
+                    it = new Item(null, str);
                     items.add(it);
                 }
             } else {
-                str = removeExtras(str);
                 if (hasPrice(str)) {
                     String[] ar = segregate(str);
-                    items.add(new Item(ar[0], ar[1]));
+                        items.add(new Item(ar[0], ar[1]));
                 } else {
                     it = PriceUtils.findFirstItemWithoutName(items);
                     if (it != null) {
@@ -63,22 +55,66 @@ public abstract class AbstractParser implements Parser{
     public List<String> filterList(List<String> mainList) {
         int end = endPointer(mainList);
         List<String> operationalList = mainList;
-        if(end > 0){
+        if (end > 0) {
             operationalList = mainList.subList(1, end);
         }
-        System.out.println("OperationalList Start");
+        System.out.println("########### OperationalList Before###########");
         printList(operationalList);
-        System.out.println("Filter ###########");
+        System.out.println("###########Filter ###########");
 
         operationalList = operationalList.stream()
-                                        .filter(this::excludeBasedOnRegex)
-                                        .filter(this::excludeBasedOnString)
-                                        .collect(Collectors.toList());
+                .filter(this::excludeBasedOnRegex)
+                .filter(this::excludeBasedOnString)
+                .map(x -> removeWeightandQuantity(x)) // it also trims at the end.
+                .map(x -> refinePrice(x))
+                .collect(Collectors.toList());
         return operationalList;
     }
 
+    public boolean isPrice(String text) { // Changing implementation to check only price(Extras like A, B are not considered as price anymore and will be filtered before it reaches to operational List
+        boolean flag = false;
+        flag = text.matches("^(-)?(\\d{0,3},\\s?\\d{1,2})");
+        return flag;
+    }
+
+    @Override
+    public boolean validate(List<Item> items) {
+        System.out.println("Abstract Implementation :: validate()");
+        return false;
+    }
+
+
+    @Override
+    public boolean hasPrice(String text) {
+        System.out.println("Abstract Implementation :: hasPrice()");
+        return false;
+    }
+
+    @Override
+    public String[] segregate(String text) {
+        System.out.println("Abstract Implementation :: segregate()");
+        return null;
+    }
+
+    @Override
+    public String getWeight(String text) {
+        System.out.println("Abstract Implementation :: getWeight()");
+        return text;
+    }
+
+    @Override
+    public String getQuantity(String text) {
+        System.out.println("Abstract Implementation :: getQuantity()");
+        return text;
+    }
+
+    @Override
+    public String removeWeightandQuantity(String text) {
+        System.out.println("Abstract Implementation :: removeWeightandQuantity()");
+        return text;
+    }
     private void printList(List<String> list) {
-        for(String l : list){
+        for (String l : list) {
             System.out.println(l);
         }
     }

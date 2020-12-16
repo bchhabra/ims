@@ -1,65 +1,65 @@
 package com.chhabras.parser.impl;
 
-import com.chhabras.entities.Item;
 import com.chhabras.parser.AbstractParser;
-import com.chhabras.parser.Parser;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class EdekaParser extends AbstractParser {
 
     @Override
     public int endPointer(List<String> mainList) {
-        return 0;
+        int i = 0;
+        for (i = 0; i < mainList.size(); i++) {
+            if (mainList.get(i).contains("SUMME") | mainList.get(i).contains("MwSt")) {
+                break;
+            }
+        }
+        return i;
     }
 
     @Override
     public boolean excludeBasedOnRegex(String text) {
-        return false;
+        String regex1 = "\\d{1,2} x";
+        String regex2 = "\\d{1,2},\\d{1,2}";
+        String regex3 = "Tel(\\.|:|\\s)?(\\s)?089(.*)";
+        if (text.matches(regex1)|| text.matches(regex2)|| text.matches(regex3)) {
+            System.out.println(" ###REGREX### " + text);
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean excludeBasedOnString(String text) {
-        return false;
-    }
-
-    @Override
-    public boolean validate(List<Item> items) {
-        return false;
-    }
-
-    @Override
-    public boolean isPrice(String text) {
-        return false;
-    }
-
-    @Override
-    public boolean hasPrice(String text) {
-        return false;
-    }
-
-    @Override
-    public String[] segregate(String text) {
-        return new String[0];
-    }
-
-    @Override
-    public String getWeight(String text) {
-        return null;
-    }
-
-    @Override
-    public String getQuantity(String text) {
-        return null;
-    }
-
-    @Override
-    public String removeExtras(String text) {
-        return null;
+        List<String> excludeList = new ArrayList<>();
+        excludeList.add("Fraunhoferstraße 1");
+        excludeList.add("Kirchheim");
+        excludeList.add("kirchheim");
+        excludeList.add("DEKA");
+        excludeList.add("EBEKA");
+        excludeList.add("Lebensmitelspeciailstent");
+        excludeList.add("Tel. 089");
+        excludeList.add("Tel: 089");
+        excludeList.add("edeka");
+        excludeList.add("EUR");
+        excludeList.add("Posten:");
+        for (String str : excludeList) {
+            if (text.contains(str)) {
+                System.out.println("###STRING### " + text);
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public String refinePrice(String text) {
-        return null;
+        if (text.matches("^(-)?(\\.)?\\d{0,3},\\d{0,2}(\\s)(B|BW|A|AW|A,)")) {
+            return text.split("\\s")[0];
+        }
+        if (text.matches("^(-)?(\\.)?\\d{0,3},\\d{0,2}(\\*)(B|BW|A|AW|A,)")) {
+            return text.split("\\*")[0];
+        }
+        return text;
     }
 }
