@@ -19,16 +19,6 @@ public class PriceUtils {
         item.setPrice(price);
     }
 
-    public static String refinePriceBeforeSaving(String price) {
-        if (price.endsWith(" A") | price.endsWith(" B") | price.endsWith(" BW") | price.endsWith(" A,")) {
-            price = price.split("\\s")[0];
-        }
-        if (price.endsWith("*A") | price.endsWith("*B") | price.endsWith("*BW") | price.endsWith("*A,")) {
-            price = price.split("\\*")[0];
-        }
-        return price;
-    }
-
     public static Item findFirstItemWithoutPrice(List<Item> items) {
         for (Item i : items) {
             if (i.getPrice() == null) {

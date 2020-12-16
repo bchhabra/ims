@@ -50,20 +50,20 @@ public class GoogleVisionRequest {
 
     public Parser decider(String text) throws Exception {
 
-        if (text.toLowerCase().contains("lidl")){
-            System.out.println("lidl Parser ");
+        if (text.toLowerCase().contains("lidl")||text.toLowerCase().contains("frauenhoferstr. 2")){
+            System.out.println("######## lidl Parser ########");
             return new LidlParser();
         }else if(text.toLowerCase().contains("edeka")){
-            System.out.println("edeka Parser ");
+            System.out.println("######## edeka Parser ########");
             return new EdekaParser();
         }else if (text.toLowerCase().contains("rewe")){
-            System.out.println("rewe Parser ");
+            System.out.println("######## rewe Parser ########");
             return new ReweParser();
         }else if (text.toLowerCase().contains("drogerie") || text.toLowerCase().contains("drogerle")){
-            System.out.println("dm Parser ");
+            System.out.println("######## dm Parser ########");
             return new DmParser();
         }else if (text.toLowerCase().contains("kaufland")){
-            System.out.println("kaufland Parser ");
+            System.out.println("######## kaufland Parser ########");
             return new KauflandParser();
         }
         return null;
