@@ -2,6 +2,8 @@ package com.chhabras.parser.impl;
 
 import com.chhabras.entities.Item;
 import com.chhabras.parser.AbstractParser;
+import com.chhabras.utilities.Regex;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,10 +22,10 @@ public class EdekaParser extends AbstractParser {
 
     @Override
     public boolean excludeBasedOnRegex(String text) {
-        String regex1 = "\\d{1,2} x";
-        String regex2 = "\\d{1,2},\\d{1,2}";
-        String regex3 = "Tel(\\.|:|\\s)?(\\s)?089(.*)";
-        String regex4 = "\\d{4} (.*)";
+        String regex1 = Regex.multiplier;
+        String regex2 = Regex.price;
+        String regex3 = Regex.phone1;
+        String regex4 = Regex.postalcode;
         if (text.matches(regex1)|| text.matches(regex2)|| text.matches(regex3)|| text.matches(regex4)) {
             System.out.println(" ###REGREX### " + text);
             return false;
@@ -38,13 +40,10 @@ public class EdekaParser extends AbstractParser {
         excludeList.add("Fraunhofer");
         excludeList.add("Kirchheim");
         excludeList.add("kirchheim");
-        excludeList.add("85551");
         excludeList.add("DEKA");
         excludeList.add("EBEKA");
         excludeList.add("EDRKA");
         excludeList.add("Lebensmitelspeciailstent");
-        excludeList.add("Tel. 089");
-        excludeList.add("Tel: 089");
         excludeList.add("edeka");
         excludeList.add("EUR");
         excludeList.add("Posten:");
@@ -74,10 +73,10 @@ public class EdekaParser extends AbstractParser {
 
     @Override
     public String refinePrice(String text) {
-        if (text.matches("^(-)?(\\.)?\\d{0,3},\\d{0,2}(\\s)(B|BW|A|AW|A,)")) {
+        if (text.matches(Regex.refine_price2)) {
             return text.split("\\s")[0];
         }
-        if (text.matches("^(-)?(\\.)?\\d{0,3},\\d{0,2}(\\*)(B|BW|A|AW|A,)")) {
+        if (text.matches(Regex.refine_price3)) {
             return text.split("\\*")[0];
         }
         return text;

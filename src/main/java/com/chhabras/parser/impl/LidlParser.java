@@ -2,6 +2,7 @@ package com.chhabras.parser.impl;
 
 import com.chhabras.entities.Item;
 import com.chhabras.parser.AbstractParser;
+import com.chhabras.utilities.Regex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +24,8 @@ public class LidlParser extends AbstractParser {
 
     @Override
     public boolean excludeBasedOnRegex(String text) {
-        String regex1 = "\\d{1,2}(,|.)\\d{1,2} x(\\s\\d+)?";
-        String regex2 = "\\d{0,2}(,|.)\\d{1,3} kg x \\d{0,2}(,|.)\\d{1,2} EUR/kg";
+        String regex1 = Regex.LIDL_regex1;
+        String regex2 = Regex.LIDL_regex2;
         if (text.matches(regex1)) {
             System.out.println("###REGREX1### " + text);
             return false;
@@ -83,7 +84,7 @@ public class LidlParser extends AbstractParser {
 
     @Override
     public boolean hasPrice(String text) {
-        return text.matches("(.*?)(\\d{0,3},\\s?\\d{0,2})(.*?)\\s?\\*?(A|B|BW|A,)\\s?");
+        return text.matches(Regex.LIDL_regex3);
     }
 
     @Override
@@ -93,7 +94,7 @@ public class LidlParser extends AbstractParser {
             Rindersuppenfleisch 3,97A
          */
         String[] arr = new String[2];
-        Pattern pattern = Pattern.compile("(.*?)(\\d+,\\d+)(\\s?(A|B|BW))");
+        Pattern pattern = Pattern.compile(Regex.LIDL_regex4);
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
             arr[0] = matcher.group(1).trim();
@@ -104,7 +105,7 @@ public class LidlParser extends AbstractParser {
 
     @Override
     public String getWeight(String text) {
-        Pattern pattern = Pattern.compile("(.*?)(\\d{0,3}\\s?(KG|Kg|kg|g))(.*?)");
+        Pattern pattern = Pattern.compile(Regex.LIDL_regex5);
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
             return matcher.group(2).trim();
@@ -114,7 +115,7 @@ public class LidlParser extends AbstractParser {
 
     @Override
     public String getQuantity(String text) {
-        Pattern pattern = Pattern.compile("(.*?)(\\d{0,3},\\d{0,2}\\s?x\\s?\\d{0,2})(.*?)");
+        Pattern pattern = Pattern.compile(Regex.LIDL_regex6);
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
             return matcher.group(2).trim();
@@ -137,11 +138,11 @@ public class LidlParser extends AbstractParser {
 
     @Override
     public String refinePrice(String text) {
-        if (text.startsWith(".") && text.matches("(-)?(\\.)?\\d{0,3},\\d{0,2}(\\s)(B|BW|A|A,)")) {
+        if (text.startsWith(".") && text.matches(Regex.refine_price1)) {
             text = text.substring(1);
             return text.split("\\s")[0];
         }
-        if (text.matches("^(-)?(\\.)?\\d{0,3},\\d{0,2}(\\s|\\*)(B|BW|A|A,)")) {
+        if (text.matches(Regex.refine_price2)) {
                 return text.split("\\s")[0];
         }
         return text;
