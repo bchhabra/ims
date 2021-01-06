@@ -2,10 +2,11 @@ package com.chhabras.utilities;
 
 public final class Regex {
 
-    public static final String postalcode = "^\\d{5}(.*)?";
-    public static final String phone1 = "Tel(\\.|:|\\s)?(\\s)?089(.*)";
+    public static final String postalcode = "^\\d{5}.*";
+    public static final String phone1 = "Tel(\\.|:|\\s)?(\\s)?089.*";
     public static final String phone2 = "\\d{5}/\\d{7}"; //08121/2235917
     public static final String multiplier = "\\d{1,2} x";
+    public static final String date = "\\d{2}\\.d{2}\\.d{4}";
 
     public static final String x = "(\\s+)?x(\\s+)?"; // x
     public static final String price = "\\d{1,2}(,|.)(\\s)?(\\d{2}+)"; //3, 99
@@ -28,5 +29,9 @@ public final class Regex {
     public static final String refine_price3 = "(-)?(\\.)?"+ price +"(\\*)(B|BW|A|AW|A,)";
 
     public static final String DM_regex1 = "\\d{2}.\\d{2}.\\d{4} \\d{2}:\\d{2} .*";
+
+
+    public static final String Edeka_regex1 = "\\d{2}.\\d{2}.\\d{4} \\d{2}:\\d{2} .*";
+    public static final String Edeka_regex2 = "\\d{2}.\\d{2}.\\d{4} \\d{2}:\\d{2} .*";
 
 }

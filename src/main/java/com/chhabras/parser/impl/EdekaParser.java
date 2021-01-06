@@ -37,6 +37,7 @@ public class EdekaParser extends AbstractParser {
     public boolean excludeBasedOnString(String text) {
         List<String> excludeList = new ArrayList<>();
         excludeList.add("Fraunhoferstraße 1");
+        excludeList.add("Uhlandstr.31");
         excludeList.add("Fraunhofer");
         excludeList.add("Kirchheim");
         excludeList.add("kirchheim");
@@ -47,6 +48,8 @@ public class EdekaParser extends AbstractParser {
         excludeList.add("edeka");
         excludeList.add("EUR");
         excludeList.add("Posten:");
+        excludeList.add("KASSE:");
+        excludeList.add("MARKT:");
         for (String str : excludeList) {
             if (text.contains(str)) {
                 System.out.println(" ###STRING### " + text);
