@@ -1,5 +1,6 @@
 package com.chhabras.request;
 
+import com.chhabras.parser.impl.BonusParser;
 import com.chhabras.parser.impl.DmParser;
 import com.chhabras.parser.impl.EdekaParser;
 import com.chhabras.parser.impl.KauflandParser;
@@ -65,6 +66,9 @@ public class GoogleVisionRequest {
         }else if (text.toLowerCase().contains("kaufland")){
             System.out.println("######## kaufland Parser ########");
             return new KauflandParser();
+        }else if (text.toLowerCase().contains("bonus")){
+            System.out.println("######## Bonus Parser ########");
+            return new BonusParser();
         }
         return null;
     }
