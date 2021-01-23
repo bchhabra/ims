@@ -1,5 +1,6 @@
 import com.chhabras.entities.Item;
 import com.chhabras.parser.Parser;
+import com.chhabras.request.Detect;
 import com.chhabras.request.GoogleVisionRequest;
 import org.testng.annotations.Test;
 
@@ -14,7 +15,7 @@ public class OCRSampleTest {
     public void test() throws Exception {
         String file1 = "edeka05.jpg";
         String file2 = "edeka06.jpg";
-        String file3 = "lidl03.jpg";
+        //String file3 = "lidl03.jpg";
         String file4 = "lidl10.jpg";
         String file5 = "edeka09.jpg";
         String file6 = "dm01.jpg";
@@ -22,7 +23,7 @@ public class OCRSampleTest {
         String file8 = "PXL_20210120_153907375.jpg";
         all(file1, 3);
         all(file2, 8);
-        all(file3, 12);
+        //all(file3, 12);
         all(file4, 4);
         all(file5, 15);
         all(file6, 8);
