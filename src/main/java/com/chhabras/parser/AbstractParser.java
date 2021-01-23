@@ -2,10 +2,13 @@ package com.chhabras.parser;
 
 import com.chhabras.entities.Item;
 import com.chhabras.utilities.PriceUtils;
+import com.chhabras.utilities.Regex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public abstract class AbstractParser implements Parser {
@@ -73,7 +76,7 @@ public abstract class AbstractParser implements Parser {
 
     public boolean isPrice(String text) { // Changing implementation to check only price(Extras like A, B are not considered as price anymore and will be filtered before it reaches to operational List
         boolean flag = false;
-        flag = text.matches("^(-)?(\\d{0,3},\\s?\\d{1,2})");
+        flag = text.matches(Regex.onlyprice);
         return flag;
     }
 
@@ -113,6 +116,33 @@ public abstract class AbstractParser implements Parser {
         System.out.println("Abstract Implementation :: removeWeightandQuantity()");
         return text;
     }
+
+    @Override
+    public String refinePrice(String text) {
+        /**
+         *
+         */
+        Pattern r = Pattern.compile(Regex.refine_price0);
+        Matcher m = r.matcher(text);
+        if (m.find( )) {
+            /*
+            System.out.println("Found value: " + m.group(2) );
+            System.out.println("Found value: " + m.group(0) );
+            System.out.println("Found value: " + m.group(1) );
+            */
+            return text; // and let segregater handle this.
+        }
+        r = Pattern.compile(Regex.refine_price1);
+        m = r.matcher(text);
+        if (m.find( )) {
+            return m.group(1).replaceAll(" ","");
+        }
+        else {
+            System.out.println("NO MATCH");
+        }
+        return text;
+    }
+
     private void printList(List<String> list) {
         for (String l : list) {
             System.out.println(l);

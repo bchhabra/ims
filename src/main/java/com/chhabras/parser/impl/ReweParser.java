@@ -5,8 +5,19 @@ import com.chhabras.utilities.Regex;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.chhabras.utilities.Regex.price;
+import static com.chhabras.utilities.Regex.quantity1;
+import static com.chhabras.utilities.Regex.weight_kg;
+import static com.chhabras.utilities.Regex.x;
 
 public class ReweParser extends AbstractParser {
+
+    public static final String REWE_regex1 = quantity1 + x + price;//2 Stk x 3, 99
+    public static final String REWE_regex2 = weight_kg + x + price;//+"(\\s)?EUR/kg";//0, 372 kg x 24, 40 EUR/kg
+
     @Override
     public int endPointer(List<String> mainList) {
         int i = 0;
@@ -21,11 +32,11 @@ public class ReweParser extends AbstractParser {
     @Override
     public boolean excludeBasedOnRegex(String text) {
 
-        if (text.matches(Regex.REWE_regex1)) {
+        if (text.matches(REWE_regex1)) {
             System.out.println("###REGREX1### " + text);
             return false;
         }
-        if (text.matches(Regex.REWE_regex2)) {
+        if (text.matches(REWE_regex2)) {
             System.out.println("###REGREX2### " + text);
             return false;
         }
@@ -50,21 +61,6 @@ public class ReweParser extends AbstractParser {
             }
         }
         return true;
-    }
-
-    @Override
-    public String refinePrice(String text) {
-        if(spaceCount(text)==2){ // to handle the case where price is 1, 37 A
-            text = text.replaceFirst(" ", "");
-        }
-        if (text.startsWith(".") && text.matches(Regex.refine_price1)) {
-            text = text.substring(1);
-            return text.split("\\s")[0];
-        }
-        if (text.matches(Regex.refine_price2)) {
-            return text.split("\\s")[0];
-        }
-        return text;
     }
 
     private int spaceCount(String text) {

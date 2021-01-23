@@ -26,8 +26,23 @@ public class TestBonusParser {
     @Test
     public void test1() {
         assertTrue("2,69".matches(Regex.price));
-        assertTrue("2,69 EUR/kg".matches(Regex.Bonus_regex3));
+        assertTrue("2,69 EUR/kg".matches(parser.Bonus_regex3));
     }
 
+
+    @Test
+    public void test_dm_refinePrice() {
+        String input1 = "0,95 B";
+        String input2 = "1, 49 B";
+        String input3 = "4, 49 A";
+        String input4 = "0,48 A";
+        String input5 = "0, 25 A";
+        assertEquals("0,95", parser.refinePrice(input1));
+        assertEquals("1,49", parser.refinePrice(input2));
+        assertEquals("4,49", parser.refinePrice(input3));
+        assertEquals("0,48", parser.refinePrice(input4));
+        assertEquals("0,25", parser.refinePrice(input5));
+
+    }
 
 }

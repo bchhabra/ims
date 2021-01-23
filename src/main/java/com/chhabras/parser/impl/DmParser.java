@@ -9,6 +9,8 @@ import java.util.List;
 
 public class DmParser extends AbstractParser {
 
+    public static final String DM_regex1 = "\\d{2}.\\d{2}.\\d{4} \\d{2}:\\d{2} .*";
+
     @Override
     public int endPointer(List<String> mainList) {
         int i = 0;
@@ -22,7 +24,7 @@ public class DmParser extends AbstractParser {
 
     @Override
     public boolean excludeBasedOnRegex(String text) {
-        String regex1 = Regex.DM_regex1;
+        String regex1 = DM_regex1;
         String regex2 = Regex.phone2;
         String regex3 = Regex.postalcode;
         if (text.matches(regex1)|| text.matches(regex2)|| text.matches(regex3)) {

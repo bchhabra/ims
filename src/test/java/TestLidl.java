@@ -6,7 +6,7 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 
-public class RegexTestLidl {
+public class TestLidl {
     LidlParser parser;
 
     @BeforeMethod
@@ -64,8 +64,8 @@ public class RegexTestLidl {
         String input2 = "Bio Zwiebel rot 2,50";
         String input3 = "Bio Zwiebel rot 1 Kg 10";
         String input4 = "Bio Zwiebel rot 1 KG 134,50 A";
-        String input5 = "Bio Zwiebel rot 1 KG 1334,50 A";
-        String input6 = "0,97 ";
+        //String input5 = "Bio Zwiebel rot 1 KG 1334,50 A";
+        String input6 = "0,97 "; // it could be because of rabatt that it is not a price to be considered. refer lidl03.jpg
         String input7 = "0,97 BW ";
         assertTrue(parser.hasPrice(input1));
         assertFalse(parser.hasPrice(input2));
@@ -101,13 +101,18 @@ public class RegexTestLidl {
 
     @Test
     public void test_lidl_refinePrice() {
-        String input1 = "1,15 x 2 2,30 A"; // this should be handle by segregater()
-
+        String input1 = "1,15 x 2 2,30 A"; // this should be handle by segregater() 1,15 x 2 2,30 A
         String input2 = "2,30 A";
-        String input3 = ".6,21 A";
+        //String input3 = ".6,21 A"; // Negative case, removing now as most likely issue with picture taken.
+        String input4 = "-3,11";
+        String input5 = "0,55 A";
+        String input6 = "1,80 B";
         assertEquals("1,15 x 2 2,30 A", parser.refinePrice(input1));
         assertEquals("2,30", parser.refinePrice(input2));
-        assertEquals("6,21", parser.refinePrice(input3));
+        //assertEquals("6,21", parser.refinePrice(input3));
+        assertEquals("-3,11", parser.refinePrice(input4));
+        assertEquals("0,55", parser.refinePrice(input5));
+        assertEquals("1,80", parser.refinePrice(input6));
     }
 
     @Test

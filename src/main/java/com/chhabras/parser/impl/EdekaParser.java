@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EdekaParser extends AbstractParser {
+    public static final String Edeka_regex1 = "\\d{2}.\\d{2}.\\d{4} \\d{2}:\\d{2} .*";
+    public static final String Edeka_regex2 = "\\d{2}.\\d{2}.\\d{4} \\d{2}:\\d{2} .*";
 
     @Override
     public int endPointer(List<String> mainList) {

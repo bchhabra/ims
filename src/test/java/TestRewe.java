@@ -7,7 +7,7 @@ import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
 
-public class RegexTestRewe {
+public class TestRewe {
     ReweParser parser;
 
     @BeforeMethod
@@ -20,6 +20,7 @@ public class RegexTestRewe {
     public void test_rewe_excludeBasedOnRegex() { // if matches should return false
         String input1 = "2 Stk x 3, 99";
         String input2 = "0, 372 kg x 24, 40"; // EUR/kg
+        String input3 = "0, 112 kg x 7, 80 EUR/kg";
         assertTrue("0, 372 kg".matches(Regex.weight_kg));
         assertTrue(" x ".matches(Regex.x));
         assertTrue(" x".matches(Regex.x));
@@ -31,6 +32,8 @@ public class RegexTestRewe {
     @Test
     public void test_rewe_refinePrice() {
         String input1 = "0,25A *";
+        String input2 = "1, 37 A";
         assertEquals("0,25", parser.refinePrice(input1));
+        assertEquals("1,37", parser.refinePrice(input2));
     }
 }

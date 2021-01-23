@@ -2,14 +2,29 @@ package com.chhabras.parser.impl;
 
 import com.chhabras.entities.Item;
 import com.chhabras.parser.AbstractParser;
-import com.chhabras.utilities.Regex;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.chhabras.utilities.Regex.postalcode;
+import static com.chhabras.utilities.Regex.price;
+import static com.chhabras.utilities.Regex.weight_kg;
+import static com.chhabras.utilities.Regex.weight;
+import static com.chhabras.utilities.Regex.x;
+import static com.chhabras.utilities.Regex.refine_price1;
+import static com.chhabras.utilities.Regex.refine_price2;
+
 public class LidlParser extends AbstractParser {
+
+    public static final String LIDL_regex1 = price + x + "(\\s\\d+)?";
+    public static final String LIDL_regex2 = weight_kg + x +price+" EUR/kg";
+    public static final String LIDL_regex3 = "(.*?)(" + price + ")(.*?)\\s?\\*?(A|B|BW|A,)\\s?";
+    public static final String LIDL_regex4 = "(.*?)(" + price + ")(\\s?(A|B|BW))";
+    public static final String LIDL_regex5 = "(.*?)(" + weight + ")(.*?)";
+    public static final String LIDL_regex6 = "(.*?)("+ price + x + "\\d{0,2})(.*?)";
+
 
     @Override
     public int endPointer(List<String> mainList) {
@@ -24,14 +39,11 @@ public class LidlParser extends AbstractParser {
 
     @Override
     public boolean excludeBasedOnRegex(String text) {
-        String regex1 = Regex.LIDL_regex1;
-        String regex2 = Regex.LIDL_regex2;
-        if (text.matches(regex1)) {
-            System.out.println("###REGREX1### " + text);
-            return false;
-        }
-        if (text.matches(regex2)) {
-            System.out.println("###REGREX2### " + text);
+        String regex1 = LIDL_regex1;
+        String regex2 = LIDL_regex2;
+        String regex3 = postalcode;
+        if (text.matches(regex1)|| text.matches(regex2)|| text.matches(regex3)) {
+            System.out.println(" ###REGREX### " + text);
             return false;
         }
         return true;
@@ -54,6 +66,7 @@ public class LidlParser extends AbstractParser {
         excludeList.add("edeka");
         excludeList.add("EDEKA");
         excludeList.add("Posten");
+        excludeList.add("Ohmstr");
         for (String str : excludeList) {
             if (text.contains(str)) {
                 System.out.println("###STRING### " + text);
@@ -84,7 +97,7 @@ public class LidlParser extends AbstractParser {
 
     @Override
     public boolean hasPrice(String text) {
-        return text.matches(Regex.LIDL_regex3);
+        return text.matches(LIDL_regex3);
     }
 
     @Override
@@ -94,7 +107,7 @@ public class LidlParser extends AbstractParser {
             Rindersuppenfleisch 3,97A
          */
         String[] arr = new String[2];
-        Pattern pattern = Pattern.compile(Regex.LIDL_regex4);
+        Pattern pattern = Pattern.compile(LIDL_regex4);
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
             arr[0] = matcher.group(1).trim();
@@ -105,7 +118,7 @@ public class LidlParser extends AbstractParser {
 
     @Override
     public String getWeight(String text) {
-        Pattern pattern = Pattern.compile(Regex.LIDL_regex5);
+        Pattern pattern = Pattern.compile(LIDL_regex5);
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
             return matcher.group(2).trim();
@@ -115,7 +128,7 @@ public class LidlParser extends AbstractParser {
 
     @Override
     public String getQuantity(String text) {
-        Pattern pattern = Pattern.compile(Regex.LIDL_regex6);
+        Pattern pattern = Pattern.compile(LIDL_regex6);
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
             return matcher.group(2).trim();
@@ -134,17 +147,5 @@ public class LidlParser extends AbstractParser {
             text = text.replaceAll(quantity, "");
         }
         return text.trim();
-    }
-
-    @Override
-    public String refinePrice(String text) {
-        if (text.startsWith(".") && text.matches(Regex.refine_price1)) {
-            text = text.substring(1);
-            return text.split("\\s")[0];
-        }
-        if (text.matches(Regex.refine_price2)) {
-                return text.split("\\s")[0];
-        }
-        return text;
     }
 }
