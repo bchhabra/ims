@@ -27,7 +27,7 @@ public class OCRSampleTest {
         all(file4, 4);
         all(file5, 15);
         all(file6, 8);
-        all(file7, 10);
+        //all(file7, 10);
         all(file8, 3);
     }
 
