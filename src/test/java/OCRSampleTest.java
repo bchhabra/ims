@@ -44,6 +44,17 @@ public class OCRSampleTest {
         assertTrue(validate);
         assertEquals(count,items.size());
     }
+    @Test
+    public void readRaw() throws Exception {
+        String file = "PXL_20210120_153213956.jpg";
+        // GoogleVisionRequest request = new GoogleVisionRequest(file);
+        //String rawvalue = request.rawText();
+        //System.out.println(rawvalue);
+        //System.out.println("####################");
+        Detect detect = new Detect();
+        System.out.println(detect.detectDocumentText(file));
+
+    }
 
     @Test
     public void testme() throws Exception {
