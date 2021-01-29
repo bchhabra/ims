@@ -4,8 +4,10 @@ import com.chhabras.entities.Item;
 import com.chhabras.utilities.PriceUtils;
 import com.chhabras.utilities.Regex;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,53 +16,73 @@ import java.util.stream.Collectors;
 public abstract class AbstractParser implements Parser {
 
     @Override
-    public List<Item> parse(String input) {
-        List<String> mainList = convert2ListOfString(input);
+    public int startPointer(List<String> mainList) {
+        return 0;
+    }
+
+    @Override
+    public HashMap<String, String> segregate(String text) {
+        return null;
+    }
+
+    @Override
+    public List<Item> parse(List<String> mainList) {
         List<String> operationalList = filterList(mainList);
-        // printList(mainList);
         System.out.println("########### OperationalList After###########");
         printList(operationalList);
         List<Item> items = new ArrayList<>();
 
         for (String str : operationalList) {
             Item it;
-            if (isPrice(str)) {
+            HashMap<String, String> map = segregate(str);
+            String description = map.get("description");
+            String price = map.get("price");
+            if (price != "" && price != null) {
+                price = refinePrice(price);
                 it = PriceUtils.findFirstItemWithoutPrice(items);
                 if (it != null) {
-                    PriceUtils.setPrice(it, str);
+                    PriceUtils.setPrice(it, price.trim());
                 } else {
-                    it = new Item(null, str);
+                    it = new Item(null, price.trim());
                     items.add(it);
                 }
-            } else {
-                if (hasPrice(str)) {
-                    String[] ar = segregate(str);
-                        items.add(new Item(ar[0], ar[1]));
+            }
+            if (description != "") {
+                it = PriceUtils.findFirstItemWithoutName(items);
+                if (it != null) {
+                    PriceUtils.setName(it, description.trim());
                 } else {
-                    it = PriceUtils.findFirstItemWithoutName(items);
-                    if (it != null) {
-                        PriceUtils.setName(it, str);
-                    } else {
-                        it = new Item(str, null);
-                        items.add(it);
-                    }
+                    it = new Item(description.trim(), null);
+                    items.add(it);
                 }
-
             }
         }
         return items;
     }
 
-    public List<String> convert2ListOfString(String string) {
-        return Arrays.stream(string.split("\\r?\\n")).collect(Collectors.toList());
+    public boolean standardValidationIsOk(List<Item> items) {
+        BigDecimal sum = BigDecimal.ZERO;
+        BigDecimal zuZahlen = BigDecimal.ZERO;
+        for (Item item : items) {
+            BigDecimal price = new BigDecimal(item.getPrice().replaceAll(",","."));
+            if(item.getName().contains("zu zahlen")) {
+                zuZahlen = zuZahlen.add(price);
+            }else{
+                sum = sum.add(price);
+            }
+        }
+        if (sum.subtract(zuZahlen).compareTo(BigDecimal.ZERO) == 0) {
+            return true;
+        }else {
+            return false;
+        }
+
     }
 
     public List<String> filterList(List<String> mainList) {
+        int start = startPointer(mainList);
         int end = endPointer(mainList);
-        List<String> operationalList = mainList;
-        if (end > 0) {
-            operationalList = mainList.subList(1, end);
-        }
+        List<String> operationalList = mainList.subList(start, end);
         System.out.println("########### OperationalList Before###########");
         printList(operationalList);
         System.out.println("###########Filter ###########");
@@ -68,8 +90,6 @@ public abstract class AbstractParser implements Parser {
         operationalList = operationalList.stream()
                 .filter(this::excludeBasedOnRegex)
                 .filter(this::excludeBasedOnString)
-                .map(x -> removeWeightandQuantity(x)) // it also trims at the end.
-                .map(x -> refinePrice(x))
                 .collect(Collectors.toList());
         return operationalList;
     }
@@ -88,36 +108,10 @@ public abstract class AbstractParser implements Parser {
 
 
     @Override
-    public boolean hasPrice(String text) {
-        System.out.println("Abstract Implementation :: hasPrice()");
-        return false;
+    public boolean excludeBasedOnString(String text) {
+        return true;
     }
 
-    @Override
-    public String[] segregate(String text) {
-        System.out.println("Abstract Implementation :: segregate()");
-        return null;
-    }
-
-    @Override
-    public String getWeight(String text) {
-        System.out.println("Abstract Implementation :: getWeight()");
-        return text;
-    }
-
-    @Override
-    public String getQuantity(String text) {
-        System.out.println("Abstract Implementation :: getQuantity()");
-        return text;
-    }
-
-    @Override
-    public String removeWeightandQuantity(String text) {
-        System.out.println("Abstract Implementation :: removeWeightandQuantity()");
-        return text;
-    }
-
-    @Override
     public String refinePrice(String text) {
         /**
          *
