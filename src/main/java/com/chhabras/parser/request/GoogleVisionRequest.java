@@ -1,12 +1,12 @@
-package com.chhabras.request;
+package com.chhabras.parser.request;
 
+import com.chhabras.parser.Parser;
 import com.chhabras.parser.impl.BonusParser;
 import com.chhabras.parser.impl.DmParser;
 import com.chhabras.parser.impl.EdekaParser;
 import com.chhabras.parser.impl.KauflandParser;
-import com.chhabras.parser.Parser;
-import com.chhabras.parser.impl.ReweParser;
 import com.chhabras.parser.impl.LidlParser;
+import com.chhabras.parser.impl.ReweParser;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
@@ -29,7 +29,7 @@ public class GoogleVisionRequest {
 
     public String rawText() throws Exception {
         List<AnnotateImageRequest> requests = new ArrayList<>();
-        ByteString imgBytes = ByteString.readFrom(GoogleVisionRequest.class.getClassLoader().getResourceAsStream("images/"+file));
+        ByteString imgBytes = ByteString.readFrom(GoogleVisionRequest.class.getClassLoader().getResourceAsStream("images/" + file));
 
         Image img = Image.newBuilder().setContent(imgBytes).build();
         Feature feat = Feature.newBuilder().setType(Feature.Type.TEXT_DETECTION).build();
@@ -42,7 +42,7 @@ public class GoogleVisionRequest {
             List<AnnotateImageResponse> responses = response.getResponsesList();
 
             Optional<AnnotateImageResponse> first = responses.stream().findFirst();
-            AnnotateImageResponse response1 =  first.get();
+            AnnotateImageResponse response1 = first.get();
             EntityAnnotation annotation = response1.getTextAnnotationsList().stream().findFirst().get();
             return annotation.getDescription();
             //printAllResponses(responses);
@@ -51,22 +51,22 @@ public class GoogleVisionRequest {
 
     public Parser decider(String text) throws Exception {
 
-        if (text.toLowerCase().contains("lidl")||text.toLowerCase().contains("frauenhoferstr. 2")){
+        if (text.toLowerCase().contains("lidl") || text.toLowerCase().contains("frauenhoferstr. 2")) {
             System.out.println("######## lidl Parser ########");
             return new LidlParser();
-        }else if(text.toLowerCase().contains("edeka")){
+        } else if (text.toLowerCase().contains("edeka")) {
             System.out.println("######## edeka Parser ########");
             return new EdekaParser();
-        }else if (text.toLowerCase().contains("rewe")){
+        } else if (text.toLowerCase().contains("rewe")) {
             System.out.println("######## rewe Parser ########");
             return new ReweParser();
-        }else if (text.toLowerCase().contains("drogerie") || text.toLowerCase().contains("drogerle")){
+        } else if (text.toLowerCase().contains("drogerie") || text.toLowerCase().contains("drogerle")) {
             System.out.println("######## dm Parser ########");
             return new DmParser();
-        }else if (text.toLowerCase().contains("kaufland")){
+        } else if (text.toLowerCase().contains("kaufland")) {
             System.out.println("######## kaufland Parser ########");
             return new KauflandParser();
-        }else if (text.toLowerCase().contains("bonus")){
+        } else if (text.toLowerCase().contains("bonus")) {
             System.out.println("######## Bonus Parser ########");
             return new BonusParser();
         }
@@ -77,13 +77,13 @@ public class GoogleVisionRequest {
     private void printAllResponses(List<AnnotateImageResponse> responses) {
         for (AnnotateImageResponse res : responses) {
             if (res.hasError()) {
-                System.out.println("Error: %s\n" +res.getError().getMessage());
+                System.out.println("Error: %s\n" + res.getError().getMessage());
                 return;
             }
             // For full list of available annotations, see http://g.co/cloud/vision/docs
             for (EntityAnnotation annotation : res.getTextAnnotationsList()) {
-                System.out.println("Text: %s\n"+ annotation.getDescription());
-                System.out.println("Position : %s\n"+ annotation.getBoundingPoly());
+                System.out.println("Text: %s\n" + annotation.getDescription());
+                System.out.println("Position : %s\n" + annotation.getBoundingPoly());
             }
         }
     }

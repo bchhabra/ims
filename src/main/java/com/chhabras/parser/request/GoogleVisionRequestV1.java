@@ -1,4 +1,4 @@
-package com.chhabras.request;
+package com.chhabras.parser.request;
 
 /*
  * Copyright 2017 Google Inc.
@@ -17,52 +17,40 @@ package com.chhabras.request;
  */
 
 
+import com.chhabras.parser.Parser;
+import com.chhabras.parser.impl.BonusParser;
+import com.chhabras.parser.impl.DmParser;
+import com.chhabras.parser.impl.EdekaParser;
+import com.chhabras.parser.impl.KauflandParser;
+import com.chhabras.parser.impl.LidlParser;
+import com.chhabras.parser.impl.ReweParser;
 import com.google.api.gax.longrunning.OperationFuture;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.Storage.BlobListOption;
 import com.google.cloud.storage.StorageOptions;
-import com.google.cloud.vision.v1.AnnotateFileResponse;
+import com.google.cloud.vision.v1.*;
 import com.google.cloud.vision.v1.AnnotateFileResponse.Builder;
-import com.google.cloud.vision.v1.AnnotateImageRequest;
-import com.google.cloud.vision.v1.AnnotateImageResponse;
-import com.google.cloud.vision.v1.AsyncAnnotateFileRequest;
-import com.google.cloud.vision.v1.AsyncAnnotateFileResponse;
-import com.google.cloud.vision.v1.AsyncBatchAnnotateFilesResponse;
-import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
-import com.google.cloud.vision.v1.Block;
-import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.Feature.Type;
-import com.google.cloud.vision.v1.GcsDestination;
-import com.google.cloud.vision.v1.GcsSource;
-import com.google.cloud.vision.v1.Image;
-import com.google.cloud.vision.v1.ImageAnnotatorClient;
-import com.google.cloud.vision.v1.ImageSource;
-import com.google.cloud.vision.v1.InputConfig;
-import com.google.cloud.vision.v1.LocalizedObjectAnnotation;
-import com.google.cloud.vision.v1.OperationMetadata;
-import com.google.cloud.vision.v1.OutputConfig;
-import com.google.cloud.vision.v1.Page;
-import com.google.cloud.vision.v1.Paragraph;
-import com.google.cloud.vision.v1.Symbol;
-import com.google.cloud.vision.v1.TextAnnotation;
-import com.google.cloud.vision.v1.Word;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.util.JsonFormat;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-public class Detect {
+public class GoogleVisionRequestV1 {
     /**
      * Performs document text detection on a local image file.
      *
@@ -71,120 +59,13 @@ public class Detect {
      * @throws IOException on Input/Output errors.
      */
     // [START vision_fulltext_detection]
-    TreeMap<Integer, String> lines = new TreeMap<Integer, String>();
-    public String detectDocumentText(String file) throws IOException {
-        List<AnnotateImageRequest> requests = new ArrayList<>();
-        String text = "";
-        ByteString imgBytes = ByteString.readFrom(Detect.class.getClassLoader().getResourceAsStream("images/"+file));
-        Image img = Image.newBuilder().setContent(imgBytes).build();
+    TreeMap<Integer, Set<WordV1>> lineMap = new TreeMap<>();
 
-        Feature feat = Feature.newBuilder().setType(Type.DOCUMENT_TEXT_DETECTION).build();
-        AnnotateImageRequest request =
-                AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
-        requests.add(request);
-
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
-            BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
-            List<AnnotateImageResponse> responses = response.getResponsesList();
-            client.close();
-
-            for (AnnotateImageResponse res : responses) {
-                if (res.hasError()) {
-                    System.out.format("Error: %s%n", res.getError().getMessage());
-                    return "Error";
-                }
-
-                // For full list of available annotations, see http://g.co/cloud/vision/docs
-                TextAnnotation annotation = res.getFullTextAnnotation();
-                for (Page page : annotation.getPagesList()) {
-
-                    String pageText = "";
-                    int y_axis = -1;
-                    for (Block block : page.getBlocksList()) {
-                        String blockText = "";
-                        for (Paragraph para : block.getParagraphsList()) {
-                            String paraText = "";
-                            for (Word word : para.getWordsList()) {
-                                String wordText = "";
-
-                                for (Symbol symbol : word.getSymbolsList()) {
-                                    wordText = wordText + symbol.getText();
-                                    /*System.out.format(
-                                            "Symbol text: %s (confidence: %f)%n",
-                                            symbol.getText(), symbol.getConfidence());
-
-                                           // y_axis = symbol.boundingBox_.vertices_.get(0).y_;*/
-                                //y_axis = symbol.getBoundingBox().getVertices(0).getY();
-                                }
-                                /* System.out.format(
-                                        "Word text: %s (confidence: %f)%n%n", wordText, word.getConfidence());*/
-                                System.out.println(wordText);
-                                y_axis = word.getBoundingBox().getVertices(0).getY();
-                                System.out.println(word.getBoundingBox().getVertices(0).getX()+", "+word.getBoundingBox().getVertices(0).getY());
-                                System.out.println(word.getBoundingBox().getVertices(1).getX()+", "+word.getBoundingBox().getVertices(1).getY());
-                                System.out.println(word.getBoundingBox().getVertices(2).getX()+", "+word.getBoundingBox().getVertices(2).getY());
-                                System.out.println(word.getBoundingBox().getVertices(3).getX()+", "+word.getBoundingBox().getVertices(3).getY());
-
-                                //
-                                populateLine(wordText, y_axis);
-                                paraText = String.format("%s %s", paraText, wordText);
-                            }
-                            // Output Example using Paragraph:
-                            System.out.println("%nParagraph: %n" + paraText);
-                            System.out.format("Paragraph Confidence: %f%n", para.getConfidence());
-                            blockText = blockText + paraText;
-                        }
-                        pageText = pageText + blockText;
-                    }
-                }
-                text = annotation.getText();
-                System.out.println("%nComplete annotation:");
-                System.out.println(text);
-            }
-        }
-        printMap(lines);
-        return text;
-    }
-
-    public void printMap(Map mp) {
-        System.out.println("#######################################");
-        Iterator it = mp.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            System.out.println(pair.getKey() + " = " + pair.getValue());
-            it.remove(); // avoids a ConcurrentModificationException
-        }
-        System.out.println("#######################################");
-    }
-
-    private void populateLine(String wordText, int y_axis) {
-        int x = considerLine(y_axis);
-        if(x > 0) {
-            lines.put(x, lines.get(x)+" "+wordText);
-        }else{
-            lines.put(y_axis, wordText);
-        }
-    }
-    // [END vision_fulltext_detection]
-
-    private int considerLine(int y_axis) {
-        Iterator it = lines.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            if ((y_axis < Integer.parseInt(pair.getKey().toString()) + 30)) {
-                return Integer.parseInt(pair.getKey().toString());
-            }
-        }
-        return -1;
-    }
     /**
      * Performs document text detection on a remote image on Google Cloud Storage.
      *
      * @param gcsPath The path to the remote file on Google Cloud Storage to detect document text on.
-     * @throws Exception on errors while closing the client.
+     * @throws Exception   on errors while closing the client.
      * @throws IOException on Input/Output errors.
      */
     // [START vision_fulltext_detection_gcs]
@@ -228,7 +109,7 @@ public class Detect {
                                             symbol.getText(), symbol.getConfidence());
                                 }
                                 System.out.format(
-                                        "Word text: %s (confidence: %f)%n%n", wordText, word.getConfidence());
+                                        "WordV1 text: %s (confidence: %f)%n%n", wordText, word.getConfidence());
                                 paraText = String.format("%s %s", paraText, wordText);
                             }
                             // Output Example using Paragraph:
@@ -244,16 +125,14 @@ public class Detect {
             }
         }
     }
-    // [END vision_fulltext_detection_gcs]
 
-    // [START vision_text_detection_pdf_gcs]
     /**
      * Performs document text OCR with PDF/TIFF as source files on Google Cloud Storage.
      *
-     * @param gcsSourcePath The path to the remote file on Google Cloud Storage to detect document
-     *     text on.
+     * @param gcsSourcePath      The path to the remote file on Google Cloud Storage to detect document
+     *                           text on.
      * @param gcsDestinationPath The path to the remote file on Google Cloud Storage to store the
-     *     results on.
+     *                           results on.
      * @throws Exception on errors while closing the client.
      */
     public static void detectDocumentsGcs(String gcsSourcePath, String gcsDestinationPath)
@@ -365,14 +244,12 @@ public class Detect {
             }
         }
     }
-    // [END vision_text_detection_pdf_gcs]
 
-    // [START vision_localize_objects]
     /**
      * Detects localized objects in the specified local image.
      *
      * @param filePath The path to the file to perform localized object detection on.
-     * @throws Exception on errors while closing the client.
+     * @throws Exception   on errors while closing the client.
      * @throws IOException on Input/Output errors.
      */
     public static void detectLocalizedObjects(String filePath) throws IOException {
@@ -410,15 +287,13 @@ public class Detect {
             }
         }
     }
-    // [END vision_localize_objects]
 
-    // [START vision_localize_objects_gcs]
     /**
      * Detects localized objects in a remote image on Google Cloud Storage.
      *
      * @param gcsPath The path to the remote file on Google Cloud Storage to detect localized objects
-     *     on.
-     * @throws Exception on errors while closing the client.
+     *                on.
+     * @throws Exception   on errors while closing the client.
      * @throws IOException on Input/Output errors.
      */
     public static void detectLocalizedObjectsGcs(String gcsPath) throws IOException {
@@ -456,5 +331,163 @@ public class Detect {
             }
         }
     }
-    // [END vision_localize_objects_gcs]
+
+    public List<String> detectDocumentText(String file) throws IOException {
+        List<AnnotateImageRequest> requests = new ArrayList<>();
+        String text = "";
+        ByteString imgBytes = ByteString.readFrom(GoogleVisionRequestV1.class.getClassLoader().getResourceAsStream("images/" + file));
+        Image img = Image.newBuilder().setContent(imgBytes).build();
+
+        Feature feat = Feature.newBuilder().setType(Type.TEXT_DETECTION).build();
+        AnnotateImageRequest request =
+                AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
+        requests.add(request);
+
+
+        // Initialize client that will be used to send requests. This client only needs to be created
+        // once, and can be reused for multiple requests. After completing all of your requests, call
+        // the "close" method on the client to safely clean up any remaining background resources.
+        try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
+            BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
+            List<AnnotateImageResponse> responses = response.getResponsesList();
+            client.close();
+
+            for (AnnotateImageResponse res : responses) {
+                if (res.hasError()) {
+                    System.out.format("Error: %s%n", res.getError().getMessage());
+
+                }
+
+                // For full list of available annotations, see http://g.co/cloud/vision/docs
+                TextAnnotation annotation = res.getFullTextAnnotation();
+                for (Page page : annotation.getPagesList()) {
+
+                    String pageText = "";
+                    int x_axis = -1;
+                    int y_axis = -1;
+                    for (Block block : page.getBlocksList()) {
+                        String blockText = "";
+                        for (Paragraph para : block.getParagraphsList()) {
+                            String paraText = "";
+                            for (Word word : para.getWordsList()) {
+                                String wordText = "";
+
+                                for (Symbol symbol : word.getSymbolsList()) {
+                                    wordText = wordText + symbol.getText();
+                                    /*System.out.format(
+                                            "Symbol text: %s (confidence: %f)%n",
+                                            symbol.getText(), symbol.getConfidence());
+
+                                         */
+                                }
+                                /* System.out.format(
+                                        "WordV1 text: %s (confidence: %f)%n%n", wordText, word.getConfidence());*/
+                                //System.out.println(wordText);
+                                x_axis = word.getBoundingBox().getVertices(0).getX();
+                                y_axis = word.getBoundingBox().getVertices(0).getY();
+                                Coordinates coordinates = new Coordinates(x_axis, y_axis);
+                                operateLine(wordText, coordinates);
+                                paraText = String.format("%s %s", paraText, wordText);
+                            }
+                            // Output Example using Paragraph:
+                            // System.out.println("%nParagraph: %n" + paraText);
+                            // System.out.format("Paragraph Confidence: %f%n", para.getConfidence());
+                            blockText = blockText + paraText;
+                        }
+                        pageText = pageText + blockText;
+                    }
+                }
+                //text = annotation.getText();
+                //  System.out.println("%nComplete annotation:");
+                // System.out.println(text);
+            }
+        }
+        List<String> results = new ArrayList();
+        List<String> results2 = new ArrayList();
+
+        lineMap.values().stream().forEach(line -> {
+            StringBuilder builder = new StringBuilder();
+            line.stream().forEach(word -> builder.append(word).append(" "));
+            results.add(builder.toString());
+        });
+        //results = lineMap.values().stream().map(line -> line.stream()).flatMap(word -> word.map(w->w.getText()).collect(Collectors.toList());
+        results2 = lineMap.values()
+                .stream()
+                .flatMap(list -> list.stream())
+                .map(word -> word.getText())
+                .collect(Collectors.toList());
+        printMap(lineMap);
+        return results;
+        //return results2;
+
+    }
+
+    public Parser decider(List<String> list) throws Exception {
+        for (String text : list) {
+            Parser p = getParser(text);
+            if (p != null) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    private Parser getParser(String text) {
+        if (text.toLowerCase().contains("lidl") || text.toLowerCase().contains("frauenhoferstr. 2")|| text.toLowerCase().contains("ldl")) {
+            System.out.println("######## lidl Parser ########");
+            return new LidlParser();
+        } else if (text.toLowerCase().contains("edeka")) {
+            System.out.println("######## edeka Parser ########");
+            return new EdekaParser();
+        } else if (text.toLowerCase().contains("rewe")) {
+            System.out.println("######## rewe Parser ########");
+            return new ReweParser();
+        } else if (text.toLowerCase().contains("drogerie") || text.toLowerCase().contains("drogerle")) {
+            System.out.println("######## dm Parser ########");
+            return new DmParser();
+        } else if (text.toLowerCase().contains("kaufland")) {
+            System.out.println("######## kaufland Parser ########");
+            return new KauflandParser();
+        } else if (text.toLowerCase().contains("bonus")) {
+            System.out.println("######## Bonus Parser ########");
+            return new BonusParser();
+        }
+        return null;
+    }
+
+    public void printMap(Map mp) {
+        System.out.println("#######################################");
+        Iterator it = mp.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            //System.out.println(pair.getKey() + " = " + pair.getValue());
+            System.out.println(pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+        System.out.println("#######################################");
+    }
+
+    private void operateLine(String wordText, Coordinates coordinates) {
+        int index = considerNewOrExistingLine(coordinates.getY());
+        WordV1 w = new WordV1(wordText, coordinates.getX(), coordinates.getY());
+        if (index > 0) {
+            lineMap.get(index).add(w);
+        } else {
+            Set<WordV1> words = new TreeSet<>();
+            words.add(w);
+            lineMap.put(coordinates.getY(), words);
+        }
+    }
+
+
+    private int considerNewOrExistingLine(int y_axis) {
+        Iterator it = lineMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            if ((y_axis < Integer.parseInt(pair.getKey().toString()) + 30)) {
+                return Integer.parseInt(pair.getKey().toString());
+            }
+        }
+        return -1;
+    }
 }
