@@ -21,7 +21,7 @@ public class TestRewe {
         String input1 = "2 Stk x 3, 99";
         String input2 = "0, 372 kg x 24, 40"; // EUR/kg
         String input3 = "0, 112 kg x 7, 80 EUR/kg";
-        assertTrue("0, 372 kg".matches(Regex.weight_kg));
+        assertTrue("0, 372 kg".matches(Regex.weight));
         assertTrue(" x ".matches(Regex.x));
         assertTrue(" x".matches(Regex.x));
         assertTrue("85551 Kirchheim".matches(Regex.postalcode));

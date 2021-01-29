@@ -1,5 +1,4 @@
 import com.chhabras.parser.impl.EdekaParser;
-import com.chhabras.parser.impl.LidlParser;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -11,7 +10,7 @@ public class TestEdeka {
     EdekaParser parser;
 
     @BeforeMethod
-    public void setUp(){
+    public void setUp() {
         EdekaParser parser = new EdekaParser();
         this.parser = parser;
     }
@@ -30,7 +29,7 @@ public class TestEdeka {
     }
 
     @Test
-    public void test_refinePrice(){
+    public void test_refinePrice() {
         String input1 = "1,76 B";
         String input2 = "2,30 AW";
         String input3 = "6,21 A";

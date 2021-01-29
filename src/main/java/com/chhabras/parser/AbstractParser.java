@@ -124,17 +124,17 @@ public abstract class AbstractParser implements Parser {
             System.out.println("Found value: " + m.group(0) );
             System.out.println("Found value: " + m.group(1) );
             */
-            return text; // and let segregater handle this.
+            return text.replaceAll("(B|BW|A|AW|A)", "").trim(); // TODO get rid of complex logic here, eventually refine price should only be taking care of removing extras at the end A|B|AB and so on
         }
         r = Pattern.compile(Regex.refine_price1);
         m = r.matcher(text);
         if (m.find( )) {
-            return m.group(1).replaceAll(" ","");
+            return m.group(1).replaceAll(" ","").replaceAll("(B|BW|A|AW|A)", "").trim();
         }
         else {
             System.out.println("NO MATCH");
         }
-        return text;
+        return text.replaceAll("(B|BW|A|AW|A)", "").trim();
     }
 
     private void printList(List<String> list) {

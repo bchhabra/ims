@@ -10,13 +10,13 @@ import java.util.regex.Pattern;
 
 import static com.chhabras.utilities.Regex.price;
 import static com.chhabras.utilities.Regex.quantity1;
-import static com.chhabras.utilities.Regex.weight_kg;
+import static com.chhabras.utilities.Regex.weight;
 import static com.chhabras.utilities.Regex.x;
 
 public class ReweParser extends AbstractParser {
 
     public static final String REWE_regex1 = quantity1 + x + price;//2 Stk x 3, 99
-    public static final String REWE_regex2 = weight_kg + x + price;//+"(\\s)?EUR/kg";//0, 372 kg x 24, 40 EUR/kg
+    public static final String REWE_regex2 = weight + x + price;//+"(\\s)?EUR/kg";//0, 372 kg x 24, 40 EUR/kg
 
     @Override
     public int endPointer(List<String> mainList) {

@@ -10,17 +10,17 @@ public class TestBonusParser {
     BonusParser parser;
 
     @BeforeMethod
-    public void setUp(){
+    public void setUp() {
         BonusParser parser = new BonusParser();
         this.parser = parser;
     }
 
     @Test
     public void test() {
-    String one = "1, 95 B";
-    String two = "0,76 B";
+        String one = "1, 95 B";
+        String two = "0,76 B";
         System.out.println();
-        System.out.println(two.substring(0,two.lastIndexOf(" ")));
+        System.out.println(two.substring(0, two.lastIndexOf(" ")));
     }
 
     @Test
@@ -31,7 +31,7 @@ public class TestBonusParser {
 
 
     @Test
-    public void test_dm_refinePrice() {
+    public void test_refinePrice() {
         String input1 = "0,95 B";
         String input2 = "1, 49 B";
         String input3 = "4, 49 A";

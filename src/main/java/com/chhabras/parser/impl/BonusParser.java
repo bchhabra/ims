@@ -9,14 +9,14 @@ import java.util.List;
 
 import static com.chhabras.utilities.Regex.eurperkg;
 import static com.chhabras.utilities.Regex.price;
-import static com.chhabras.utilities.Regex.weight_kg;
+import static com.chhabras.utilities.Regex.weight;
 import static com.chhabras.utilities.Regex.x;
 
 public class BonusParser extends AbstractParser {
 
-    public static final String Bonus_regex1 = weight_kg + x + price + eurperkg;
-    public static final String Bonus_regex2 = weight_kg + x;
-    public static final String Bonus_regex3  = price + eurperkg;
+    public static final String Bonus_regex1 = weight + x + price + eurperkg;
+    public static final String Bonus_regex2 = weight + x;
+    public static final String Bonus_regex3 = price + eurperkg;
 
     @Override
     public int endPointer(List<String> mainList) {
@@ -38,7 +38,7 @@ public class BonusParser extends AbstractParser {
         String regex5 = Bonus_regex2;
         String regex6 = Bonus_regex3;
 
-        if (text.matches(regex1)|| text.matches(regex2)|| text.matches(regex3)|| text.matches(regex4) || text.matches(regex5) || text.matches(regex6)) {
+        if (text.matches(regex1) || text.matches(regex2) || text.matches(regex3) || text.matches(regex4) || text.matches(regex5) || text.matches(regex6)) {
             System.out.println(" ###REGREX### " + text);
             return false;
         }
@@ -62,7 +62,7 @@ public class BonusParser extends AbstractParser {
         /**
          * Only EUR
          */
-        if(text.equalsIgnoreCase("EUR")){
+        if (text.equalsIgnoreCase("EUR")) {
             return false;
         }
         return true;
@@ -72,7 +72,7 @@ public class BonusParser extends AbstractParser {
     public boolean validate(List<Item> items) {
         List<Boolean> results = new ArrayList<>();
         for (Item item : items) {
-            if(item.getPrice() == null){
+            if (item.getPrice() == null) {
                 results.add(false);
             }
         }
