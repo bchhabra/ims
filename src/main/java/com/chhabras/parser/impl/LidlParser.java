@@ -11,20 +11,21 @@ import java.util.regex.Pattern;
 
 import static com.chhabras.utilities.Regex.eurperkg;
 import static com.chhabras.utilities.Regex.weight;
+import static com.chhabras.utilities.Regex.price_only;
 import static com.chhabras.utilities.Regex.x;
 
 public class LidlParser extends AbstractParser {
 
     public static final String description = "^(([a-zA-ZäöüÄÖÜß0-9]*(\\.|\\s)*)+ )";
-    public static final String price_only = "\\d{1,2}\\s*(,|\\.)\\s*\\d{2}";
-    public static final String price_x_quantity = "("+price_only+x+"\\d{1,2} )";
+    public static final String price_x_quantity = "("+ price_only+x+"\\d{1,2} )";
+
     public static final String price = "(-?\\s?"+price_only+"\\s*(B|BW|A|AW|A))";
 
     public static final String LIDL_regex1 = description+price_x_quantity+"?"+price;
     public static final String LIDL_regex2 = description+price_x_quantity+"?"+"(-?\\s?"+price_only+")";
     public static final String LIDL_regex3 = weight + x + price_only + eurperkg;
 
-
+    @Override
     public int startPointer(List<String> mainList) {
         for (int i = 0; i < mainList.size(); i++) { // reference lidl04.jpg
             if (mainList.get(i).contains("EUR")) {
@@ -67,9 +68,6 @@ public class LidlParser extends AbstractParser {
                     if(price.compareTo(BigDecimal.ZERO) > 0){
                         return false;
                     }
-                }
-                if (price.compareTo(BigDecimal.ZERO) == 0) {
-                        return false;
                 }
             }
             return true;

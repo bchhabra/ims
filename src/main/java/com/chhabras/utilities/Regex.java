@@ -10,7 +10,7 @@ public final class Regex {
 
     public static final String x = "\\s*x\\s*"; // x
     public static final String price = "-?\\s?\\d{1,2}(,|.)\\s*\\d{2}+"; //3, 99
-    public static final String onlyprice = "^(-)?(\\d{0,3},\\s?\\d{1,2})$";
+    public static final String price_only = "\\d{1,2}\\s*(,|\\.)\\s*\\d{2}";
     public static final String eurperkg = "\\s*EUR\\s*/\\s*kg\\s*";
     public static final String quantity1 = "\\d{1,2}(\\s)Stk"; //2 Stk
     public static final String weight = "(\\d{1,3}\\s*(,|\\.)?\\s*(\\d{2,3})?\\s*(kg|KG|Kg|g))"; //100g 1kg 1,45 kg

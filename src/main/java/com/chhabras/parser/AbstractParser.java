@@ -22,6 +22,7 @@ public abstract class AbstractParser implements Parser {
 
     @Override
     public HashMap<String, String> segregate(String text) {
+        System.out.println("===========Implement Segregate for your parser===============");
         return null;
     }
 
@@ -69,6 +70,9 @@ public abstract class AbstractParser implements Parser {
                 zuZahlen = zuZahlen.add(price);
             }else{
                 sum = sum.add(price);
+            }
+            if (price.compareTo(BigDecimal.ZERO) == 0) {
+                return false;
             }
         }
         if (sum.subtract(zuZahlen).compareTo(BigDecimal.ZERO) == 0) {
