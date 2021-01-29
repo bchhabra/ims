@@ -94,12 +94,6 @@ public abstract class AbstractParser implements Parser {
         return operationalList;
     }
 
-    public boolean isPrice(String text) { // Changing implementation to check only price(Extras like A, B are not considered as price anymore and will be filtered before it reaches to operational List
-        boolean flag = false;
-        flag = text.matches(Regex.onlyprice);
-        return flag;
-    }
-
     @Override
     public boolean validate(List<Item> items) {
         System.out.println("Abstract Implementation :: validate()");

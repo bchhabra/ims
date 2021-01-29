@@ -16,19 +16,6 @@ public class TestEdeka {
     }
 
     @Test
-    public void test_isPrice() {
-        String input1 = "2,50 AW";
-        String input2 = "2,50";
-        String input3 = "-2,50";
-        String input4 = ".2,50 A";
-
-        assertFalse(parser.isPrice(input1));
-        assertTrue(parser.isPrice(input2));
-        assertTrue(parser.isPrice(input3));
-        assertFalse(parser.isPrice(input4));
-    }
-
-    @Test
     public void test_refinePrice() {
         String input1 = "1,76 B";
         String input2 = "2,30 AW";

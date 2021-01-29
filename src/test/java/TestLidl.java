@@ -19,19 +19,6 @@ public class TestLidl {
     }
 
     @Test
-    public void test_isPrice() {
-        String input1 = "2,50 A";
-        String input2 = "2,50";
-        String input3 = "-2,50";
-        String input4 = ".2,50 A";
-
-        assertFalse(parser.isPrice(input1));
-        assertTrue(parser.isPrice(input2));
-        assertTrue(parser.isPrice(input3));
-        assertFalse(parser.isPrice(input4));
-    }
-
-    @Test
     public void test_lidl_excludeBasedOnRegex() { // if matches should return false
         String input1 = "0,67 x 2";
         String input2 = "0,142 kg x 6,80 EUR/kg";
