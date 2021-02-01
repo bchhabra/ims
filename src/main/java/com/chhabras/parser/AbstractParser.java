@@ -32,12 +32,14 @@ public abstract class AbstractParser implements Parser {
         System.out.println("########### OperationalList After###########");
         printList(operationalList);
         List<Item> items = new ArrayList<>();
+        System.out.println("########### Items ###########");
 
         for (String str : operationalList) {
             Item it;
             HashMap<String, String> map = segregate(str);
             String description = map.get("description");
             String price = map.get("price");
+            System.out.println(description+" :- "+price);
             if (price != "" && price != null) {
                 price = refinePrice(price);
                 it = PriceUtils.findFirstItemWithoutPrice(items);
@@ -66,7 +68,7 @@ public abstract class AbstractParser implements Parser {
         BigDecimal zuZahlen = BigDecimal.ZERO;
         for (Item item : items) {
             BigDecimal price = new BigDecimal(item.getPrice().replaceAll(",","."));
-            if(item.getName().contains("zu zahlen")) {
+            if(item.getName().contains("zahlen") || item.getName().startsWith("SUMME")) {
                 zuZahlen = zuZahlen.add(price);
             }else{
                 sum = sum.add(price);
@@ -122,7 +124,7 @@ public abstract class AbstractParser implements Parser {
             System.out.println("Found value: " + m.group(0) );
             System.out.println("Found value: " + m.group(1) );
             */
-            return text.replaceAll("(B|BW|A|AW|A)", "").trim(); // TODO get rid of complex logic here, eventually refine price should only be taking care of removing extras at the end A|B|AB and so on
+            return text.replaceAll("(B|BW|A|AW|A)", "").trim(); // TODO get rid of complex logic here, eventually refine lidl_price should only be taking care of removing extras at the end A|B|AB and so on
         }
         r = Pattern.compile(Regex.refine_price1);
         m = r.matcher(text);

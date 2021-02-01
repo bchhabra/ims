@@ -1,5 +1,6 @@
 import com.chhabras.entities.Item;
 import com.chhabras.parser.Parser;
+import com.chhabras.parser.impl.LidlParser;
 import com.chhabras.parser.request.GoogleVisionRequestV1;
 import org.testng.annotations.Test;
 
@@ -45,14 +46,15 @@ public class OCRSampleTest {
 
     @Test
     public void readRaw() throws Exception {
-        String file = "lidl06.jpg";
+        String file = "PXL_20210131_114845268.jpg";
         // GoogleVisionRequest request = new GoogleVisionRequest(file);
         //String rawvalue = request.rawText();
         //System.out.println(rawvalue);
         //System.out.println("####################");
         GoogleVisionRequestV1 googleVisionRequestV1 = new GoogleVisionRequestV1();
         List<String> lines = googleVisionRequestV1.detectDocumentText(file);
-        Parser parser = googleVisionRequestV1.decider(lines);
+        LidlParser parser = new LidlParser();
+        //Parser parser = googleVisionRequestV1.decider(lines);
         List<Item> items = parser.parse(lines);
         assertTrue(parser.validate(items));
         System.out.println("####################");

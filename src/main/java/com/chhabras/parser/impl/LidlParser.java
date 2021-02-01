@@ -13,21 +13,20 @@ import static com.chhabras.utilities.Regex.eurperkg;
 import static com.chhabras.utilities.Regex.weight;
 import static com.chhabras.utilities.Regex.price_only;
 import static com.chhabras.utilities.Regex.x;
+import static com.chhabras.utilities.Regex.pattern_d;
+import static com.chhabras.utilities.Regex.pattern_q;
+import static com.chhabras.utilities.Regex.pattern_p;
+import static com.chhabras.utilities.Regex.pattern_pz;
+
+
 
 public class LidlParser extends AbstractParser {
 
-    public static final String description = "^(([a-zA-ZäöüÄÖÜß0-9]*(\\.|\\s)*)+ )";
-    public static final String price_x_quantity = "("+ price_only+x+"\\d{1,2} )";
-
-    public static final String price = "(-?\\s?"+price_only+"\\s*(B|BW|A|AW|A))";
-
-    public static final String LIDL_regex1 = description+price_x_quantity+"?"+price;
-    public static final String LIDL_regex2 = description+price_x_quantity+"?"+"(-?\\s?"+price_only+")";
     public static final String LIDL_regex3 = weight + x + price_only + eurperkg;
 
     @Override
     public int startPointer(List<String> mainList) {
-        for (int i = 0; i < mainList.size(); i++) { // reference lidl04.jpg
+        for (int i = 0; i < mainList.size(); i++) {
             if (mainList.get(i).contains("EUR")) {
                 if (mainList.get(i).startsWith("EUR")) {
                     return i + 1;
@@ -78,27 +77,29 @@ public class LidlParser extends AbstractParser {
 
     public HashMap<String, String> segregate(String text) {
         HashMap<String, String> map = new HashMap<>();
+        Matcher matcher_d = pattern_d.matcher(text);
+        Matcher matcher_q = pattern_q.matcher(text);
+        Matcher matcher_p = pattern_p.matcher(text);
+        Matcher matcher_pz = pattern_pz.matcher(text);
 
-        if(!text.contains("zu zahlen")) {
-            final String regex = LIDL_regex1;
-            final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-            final Matcher matcher = pattern.matcher(text);
+        matcher_d.find();
+        matcher_q.find();
+        matcher_p.find();
+        matcher_pz.find();
 
-            if (matcher.find()) {
-                map.put("description", matcher.group(1).trim());
-                map.put("price", matcher.group(6).trim());
-            }
-        }else {
-            final String regex = LIDL_regex2;
-            final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-            final Matcher matcher = pattern.matcher(text);
-
-            if (matcher.find()) {
-                map.put("description", matcher.group(1).trim());
-                map.put("price", matcher.group(6).trim());
-            }
+        if(matcher_d.group(1) != null) {
+            map.put("description", matcher_d.group(1).trim());
         }
 
+        if(!text.contains("zahlen")) {
+            if(matcher_p.group(1) != null) {
+                map.put("price", matcher_p.group(1).trim());
+            }
+        }else {
+            if(matcher_pz.group(1) != null) {
+                map.put("price", matcher_pz.group(1).trim());
+            }
+        }
         return map;
     }
 

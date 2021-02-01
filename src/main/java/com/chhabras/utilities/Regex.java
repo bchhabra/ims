@@ -1,5 +1,7 @@
 package com.chhabras.utilities;
 
+import java.util.regex.Pattern;
+
 public final class Regex {
 
     public static final String postalcode = "^\\d{5}.*";
@@ -15,9 +17,17 @@ public final class Regex {
     public static final String quantity1 = "\\d{1,2}(\\s)Stk"; //2 Stk
     public static final String weight = "(\\d{1,3}\\s*(,|\\.)?\\s*(\\d{2,3})?\\s*(kg|KG|Kg|g))"; //100g 1kg 1,45 kg
 
+    public static final String description = "^(([a-zA-ZäöüÄÖÜß0-9&\\.]*(\\d,\\d{2})?(\\.|\\s)*)+ )";
+    public static final String price_x_quantity = "("+ price_only+x+"\\d{1,2} )";
+
     public static final String refine_price0 = "(-?" + price + ")" + x + "\\d+\\s*" + "(" + price + ")";
     public static final String refine_price1 = "(-?" + price + ")\\s*(B|BW|A|AW|A,|1|2)*";
     public static final String refine_price2 = "^" + refine_price1;
     public static final String refine_price3 = "(-)?(\\.)?" + price + "(\\*)(B|BW|A|AW|A,)";
 
+
+    public static final Pattern pattern_d = Pattern.compile("^([a-zA-ZäöüÄÖÜß&,-\\.\\s]*)\\s?\\d");
+    public static final Pattern pattern_q = Pattern.compile("\\d+(,\\d+)*(k?g|L)");
+    public static final Pattern pattern_p = Pattern.compile("(\\d+(,\\d+))(\\s+\\w*)*(A|B|AB)");
+    public static final Pattern pattern_pz = Pattern.compile("(\\d+(,\\d+))", Pattern.MULTILINE);
 }
