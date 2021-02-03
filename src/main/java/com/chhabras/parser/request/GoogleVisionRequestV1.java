@@ -484,7 +484,7 @@ public class GoogleVisionRequestV1 {
         Iterator it = lineMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
-            if ((y_axis < Integer.parseInt(pair.getKey().toString()) + 30)) {
+            if ((y_axis < Integer.parseInt(pair.getKey().toString()) + 20)) {
                 return Integer.parseInt(pair.getKey().toString());
             }
         }

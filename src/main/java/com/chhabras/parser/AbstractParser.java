@@ -11,7 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+
+import static com.chhabras.utilities.Regex.pattern_d;
+import static com.chhabras.utilities.Regex.pattern_p;
+import static com.chhabras.utilities.Regex.pattern_pz;
 
 public abstract class AbstractParser implements Parser {
 
@@ -21,44 +24,77 @@ public abstract class AbstractParser implements Parser {
     }
 
     @Override
-    public HashMap<String, String> segregate(String text) {
-        System.out.println("===========Implement Segregate for your parser===============");
-        return null;
+    public int endPointer(List<String> mainList) {
+        return 0;
     }
 
     @Override
+    public HashMap<String, String> segregate(String text) {
+
+        Matcher matcher_d = pattern_d.matcher(text);
+        Matcher matcher_p = pattern_p.matcher(text);
+        Matcher matcher_pz = pattern_pz.matcher(text);
+
+        if (matcher_p.find() || matcher_pz.find() || matcher_d.find()) {
+            matcher_p.reset();
+            matcher_pz.reset();
+            matcher_d.reset();
+            HashMap<String, String> map = new HashMap<>();
+            boolean pricefound = false;
+            if (matcher_p.find() && matcher_p.group(1) != null) {
+                map.put("price", matcher_p.group(1).trim());
+                pricefound = true;
+            } else if (matcher_pz.find() && (text.toLowerCase().contains("summe") || text.toLowerCase().contains("zahlen"))&& matcher_pz.group(1) != null) {
+                map.put("price", matcher_pz.group(1).trim());
+                pricefound = true;
+            }
+            if (pricefound && matcher_d.find() && matcher_d.group(1) != null) {
+                map.put("description", matcher_d.group(1).trim());
+            }
+            return map;
+        } else {
+            return null;
+        }
+    }
+
+        @Override
     public List<Item> parse(List<String> mainList) {
-        List<String> operationalList = filterList(mainList);
-        System.out.println("########### OperationalList After###########");
-        printList(operationalList);
+        printList(mainList);
         List<Item> items = new ArrayList<>();
         System.out.println("########### Items ###########");
+        boolean finished = false;
 
-        for (String str : operationalList) {
+        for (String str : mainList) {
             Item it;
             HashMap<String, String> map = segregate(str);
-            String description = map.get("description");
-            String price = map.get("price");
-            System.out.println(description+" :- "+price);
-            if (price != "" && price != null) {
-                price = refinePrice(price);
-                it = PriceUtils.findFirstItemWithoutPrice(items);
-                if (it != null) {
-                    PriceUtils.setPrice(it, price.trim());
-                } else {
-                    it = new Item(null, price.trim());
-                    items.add(it);
+            if (map != null && !finished) {
+                String description = map.get("description");
+                String price = map.get("price");
+                if (price != null && !price.trim().isEmpty()) {
+                    it = PriceUtils.findFirstItemWithoutPrice(items);
+                    if (it != null) {
+                        PriceUtils.setPrice(it, price.trim());
+                    } else {
+                        it = new Item(null, price.trim());
+                        items.add(it);
+                    }
+                }
+                if (description != null && !description.trim().isEmpty()) {
+                    it = PriceUtils.findFirstItemWithoutName(items);
+                    if (it != null) {
+                        PriceUtils.setName(it, description.trim());
+                        if(description.toLowerCase().contains("summe") || description.toLowerCase().contains("zahlen")){
+                            finished = true;
+                        }
+                    } else {
+                        it = new Item(description.trim(), null);
+                        items.add(it);
+                    }
                 }
             }
-            if (description != "") {
-                it = PriceUtils.findFirstItemWithoutName(items);
-                if (it != null) {
-                    PriceUtils.setName(it, description.trim());
-                } else {
-                    it = new Item(description.trim(), null);
-                    items.add(it);
-                }
-            }
+        }
+        for (Item i : items) {
+            System.out.println(i.getName() + " : " + i.getPrice());
         }
         return items;
     }
@@ -67,10 +103,10 @@ public abstract class AbstractParser implements Parser {
         BigDecimal sum = BigDecimal.ZERO;
         BigDecimal zuZahlen = BigDecimal.ZERO;
         for (Item item : items) {
-            BigDecimal price = new BigDecimal(item.getPrice().replaceAll(",","."));
-            if(item.getName().contains("zahlen") || item.getName().startsWith("SUMME")) {
+            BigDecimal price = new BigDecimal(item.getPrice().replaceAll(",", "."));
+            if (item.getName().toLowerCase().contains("zahlen") || item.getName().toLowerCase().startsWith("summe")) {
                 zuZahlen = zuZahlen.add(price);
-            }else{
+            } else {
                 sum = sum.add(price);
             }
             if (price.compareTo(BigDecimal.ZERO) == 0) {
@@ -79,36 +115,25 @@ public abstract class AbstractParser implements Parser {
         }
         if (sum.subtract(zuZahlen).compareTo(BigDecimal.ZERO) == 0) {
             return true;
-        }else {
+        } else {
             return false;
         }
 
     }
 
-    public List<String> filterList(List<String> mainList) {
-        int start = startPointer(mainList);
-        int end = endPointer(mainList);
-        List<String> operationalList = mainList.subList(start, end);
-        System.out.println("########### OperationalList Before###########");
-        printList(operationalList);
-        System.out.println("###########Filter ###########");
-
-        operationalList = operationalList.stream()
-                .filter(this::excludeBasedOnRegex)
-                .filter(this::excludeBasedOnString)
-                .collect(Collectors.toList());
-        return operationalList;
-    }
-
     @Override
     public boolean validate(List<Item> items) {
-        System.out.println("Abstract Implementation :: validate()");
-        return false;
+        return standardValidationIsOk(items);
     }
 
 
     @Override
     public boolean excludeBasedOnString(String text) {
+        return true;
+    }
+
+    @Override
+    public boolean excludeBasedOnRegex(String text) {
         return true;
     }
 
