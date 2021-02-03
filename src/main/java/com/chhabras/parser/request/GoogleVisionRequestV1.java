@@ -416,7 +416,7 @@ public class GoogleVisionRequestV1 {
                 .flatMap(list -> list.stream())
                 .map(word -> word.getText())
                 .collect(Collectors.toList());
-        printMap(lineMap);
+        //printMap(lineMap);
         return results;
         //return results2;
 
@@ -433,7 +433,7 @@ public class GoogleVisionRequestV1 {
     }
 
     private Parser getParser(String text) {
-        if (text.toLowerCase().contains("lidl") || text.toLowerCase().contains("frauenhoferstr. 2")|| text.toLowerCase().contains("ldl")) {
+        if (text.toLowerCase().contains("lidl") || text.toLowerCase().contains("frauenhoferstr. 2")|| text.toLowerCase().contains("ldl")|| text.toLowerCase().contains("lidi")) {
             System.out.println("######## lidl Parser ########");
             return new LidlParser();
         } else if (text.toLowerCase().contains("edeka")) {

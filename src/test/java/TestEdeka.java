@@ -19,20 +19,6 @@ public class TestEdeka {
     }
 
     @Test
-    public void test_refinePrice() {
-        String input1 = "1,76 B";
-        String input2 = "2,30 AW";
-        String input3 = "6,21 A";
-        String input4 = "0,15*B";
-        String input5 = "1,35*A";
-        assertEquals("1,76", parser.refinePrice(input1));
-        assertEquals("2,30", parser.refinePrice(input2));
-        assertEquals("6,21", parser.refinePrice(input3));
-        assertEquals("0,15", parser.refinePrice(input4));
-        assertEquals("1,35", parser.refinePrice(input5));
-    }
-
-    @Test
     public void test_1() {
         String input1 = "ZONIN CHIANTI0,75L 8,76 B";
         String input2 = "SUMME EUR 8.76";

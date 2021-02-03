@@ -15,29 +15,6 @@ public class TestLidl {
     }
 
     @Test
-    public void test_lidl_excludeBasedOnRegex() { // if match, then it should return false
-        String input1 = "0,142 kg x 6,80 EUR/kg";
-        String input2 = "0,106 kg x 15,42 EUR / kg";
-        assertFalse(parser.excludeBasedOnRegex(input1));
-        assertFalse(parser.excludeBasedOnRegex(input2));
-    }
-
-    @Test
-    public void test_lidl_refinePrice() {
-        String input1 = "1,15 x 2 2,30 A";
-        String input2 = "2,30 A";
-        String input4 = "-3,11";
-        String input5 = "0,55 A";
-        String input6 = "1,80 B";
-        assertEquals("1,15 x 2 2,30", parser.refinePrice(input1));
-        assertEquals("2,30", parser.refinePrice(input2));
-        assertEquals("-3,11", parser.refinePrice(input4));
-        assertEquals("0,55", parser.refinePrice(input5));
-        assertEquals("1,80", parser.refinePrice(input6));
-    }
-
-
-    @Test
     public void test_1() {
         String input1 = "Bio Ingwer 0,97 A";
         String input2 = "Romatomaten 1,15 x 2 2,30 A ";

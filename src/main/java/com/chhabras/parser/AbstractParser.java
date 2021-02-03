@@ -2,31 +2,18 @@ package com.chhabras.parser;
 
 import com.chhabras.entities.Item;
 import com.chhabras.utilities.PriceUtils;
-import com.chhabras.utilities.Regex;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.chhabras.utilities.Regex.pattern_d;
 import static com.chhabras.utilities.Regex.pattern_p;
 import static com.chhabras.utilities.Regex.pattern_pz;
 
 public abstract class AbstractParser implements Parser {
-
-    @Override
-    public int startPointer(List<String> mainList) {
-        return 0;
-    }
-
-    @Override
-    public int endPointer(List<String> mainList) {
-        return 0;
-    }
 
     @Override
     public HashMap<String, String> segregate(String text) {
@@ -124,42 +111,6 @@ public abstract class AbstractParser implements Parser {
     @Override
     public boolean validate(List<Item> items) {
         return standardValidationIsOk(items);
-    }
-
-
-    @Override
-    public boolean excludeBasedOnString(String text) {
-        return true;
-    }
-
-    @Override
-    public boolean excludeBasedOnRegex(String text) {
-        return true;
-    }
-
-    public String refinePrice(String text) {
-        /**
-         *
-         */
-        Pattern r = Pattern.compile(Regex.refine_price0);
-        Matcher m = r.matcher(text);
-        if (m.find( )) {
-            /*
-            System.out.println("Found value: " + m.group(2) );
-            System.out.println("Found value: " + m.group(0) );
-            System.out.println("Found value: " + m.group(1) );
-            */
-            return text.replaceAll("(B|BW|A|AW|A)", "").trim(); // TODO get rid of complex logic here, eventually refine lidl_price should only be taking care of removing extras at the end A|B|AB and so on
-        }
-        r = Pattern.compile(Regex.refine_price1);
-        m = r.matcher(text);
-        if (m.find( )) {
-            return m.group(1).replaceAll(" ","").replaceAll("(B|BW|A|AW|A)", "").trim();
-        }
-        else {
-            System.out.println("NO MATCH");
-        }
-        return text.replaceAll("(B|BW|A|AW|A)", "").trim();
     }
 
     private void printList(List<String> list) {

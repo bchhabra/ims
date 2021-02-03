@@ -10,24 +10,24 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
 
 public class OCRSampleTest {
-
+    @Test
     public void test() throws Exception {
-        String file1 = "edeka05.jpg";
-        String file2 = "edeka06.jpg";
-        //String file3 = "lidl03.jpg";
+        String file1 = "PXL_20210131_114845268.jpg"; //lidl
+        String file2 = "PXL_20210131_114845270.jpg"; //lidl
+        String file3 = "PXL_20210120_153213956.jpg"; //lidl
         String file4 = "lidl10.jpg";
         String file5 = "edeka09.jpg";
         String file6 = "dm01.jpg";
-        String file7 = "PXL_20210120_153848604.jpg";
-        String file8 = "PXL_20210120_153907375.jpg";
-        all(file1, 3);
-        all(file2, 8);
-        //all(file3, 12);
-        all(file4, 4);
-        all(file5, 15);
-        all(file6, 8);
+        String file7 = "PXL_20210120_153848604.jpg"; // Bonus
+        String file8 = "PXL_20210120_153907375.jpg"; // Bonus
+        all(file1, 11);
+        all(file2, 7);
+        all(file3, 7);
+        //all(file4, 4);
+        //all(file5, 15);
+        //all(file6, 8);
         //all(file7, 10);
-        all(file8, 3);
+        //all(file8, 3);
     }
 
     private void all(String file, int count) throws Exception {
@@ -36,17 +36,15 @@ public class OCRSampleTest {
         Parser parser = request.decider(lines);
         List<Item> items = parser.parse(lines);
         boolean validate = parser.validate(items);
-        System.out.println("############## items ###############");
-        for(Item i : items) {
-            System.out.println(i.getName()+" : "+i.getPrice());
-        }
         assertTrue(validate);
         assertEquals(count,items.size());
     }
 
     @Test
     public void readRaw() throws Exception {
-        String file = "PXL_20210131_114845268.jpg";
+        String file = "lidl06.jpg";
+        //String file = "PXL_20210131_114845268.jpg";  //Lidl issue with quantity getting mixed with price , resulting total NOK.
+        //String file = "lidl06.jpg";  //Lidl issue with quantity getting mixed with price , resulting total NOK.
         // GoogleVisionRequest request = new GoogleVisionRequest(file);
         //String rawvalue = request.rawText();
         //System.out.println(rawvalue);
@@ -57,13 +55,6 @@ public class OCRSampleTest {
         //Parser parser = googleVisionRequestV1.decider(lines);
         List<Item> items = parser.parse(lines);
         assertTrue(parser.validate(items));
-        System.out.println("####################");
-        for (Item i : items) {
-            System.out.println(i.getName() + " : " + i.getPrice());
-        }
-
-        System.out.println();
-
     }
 
     @Test
