@@ -382,11 +382,11 @@ public class GoogleVisionRequestV1 {
                                 }
                                 /* System.out.format(
                                         "WordV1 text: %s (confidence: %f)%n%n", wordText, word.getConfidence());*/
-                                //System.out.println(wordText);
                                 x_axis = word.getBoundingBox().getVertices(0).getX();
                                 y_axis = word.getBoundingBox().getVertices(0).getY();
                                 Coordinates coordinates = new Coordinates(x_axis, y_axis);
                                 operateLine(wordText, coordinates);
+                                //System.out.println(wordText+"::"+coordinates.getX()+"::"+coordinates.getY());
                                 paraText = String.format("%s %s", paraText, wordText);
                             }
                             // Output Example using Paragraph:
@@ -484,7 +484,7 @@ public class GoogleVisionRequestV1 {
         Iterator it = lineMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
-            if ((y_axis < Integer.parseInt(pair.getKey().toString()) + 20)) {
+            if ((y_axis < Integer.parseInt(pair.getKey().toString()) + 30)) {
                 return Integer.parseInt(pair.getKey().toString());
             }
         }
