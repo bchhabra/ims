@@ -22,6 +22,7 @@ public class TestLidl {
         String input4 = "Weizenmehl 1kg 0,37 A";
         String input5 = "Bio Zwiebel rot 500g 1,25 x 2 2,50 A";
         String input6 = "zu zahlen 13,96";
+        String input7 = "Bioland Möhren EUR/kg 1,59 A";
 
 
         assertEquals("Bio Ingwer", parser.segregate(input1).get("description").trim());
@@ -41,6 +42,10 @@ public class TestLidl {
 
         assertEquals("zu zahlen", parser.segregate(input6).get("description").trim());
         assertEquals("13,96", parser.segregate(input6).get("price").trim());
+
+      // TODO To be Fixed
+      //  assertEquals("Bioland Möhren", parser.segregate(input7).get("description").trim());
+      //  assertEquals("1,59", parser.segregate(input7).get("price").trim());
     }
 
 

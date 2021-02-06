@@ -20,7 +20,7 @@ public class OCRSampleTest {
         String file6 = "dm01.jpg";
         String file7 = "PXL_20210120_153848604.jpg"; // Bonus
         String file8 = "PXL_20210120_153907375.jpg"; // Bonus
-        all(file1, 11);
+        //all(file1, 11);
         all(file2, 7);
         all(file3, 7);
         //all(file4, 4);
@@ -42,7 +42,10 @@ public class OCRSampleTest {
 
     @Test
     public void readRaw() throws Exception {
-        String file = "lidl06.jpg";
+        //String file = "PXL_20210120_153848604.jpg";  // Bonus
+        String file = "PXL_20210120_153907375.jpg";  // Bonus
+        //String file = "PXL_20210120_154034451.jpg";  // Edeka Tarman
+        //String file = "PXL_20210120_154024658.jpg";  // Hit
         //String file = "PXL_20210131_114845268.jpg";  //Lidl issue with quantity getting mixed with price , resulting total NOK.
         //String file = "lidl06.jpg";  //Lidl issue with quantity getting mixed with price , resulting total NOK.
         // GoogleVisionRequest request = new GoogleVisionRequest(file);
@@ -51,8 +54,8 @@ public class OCRSampleTest {
         //System.out.println("####################");
         GoogleVisionRequestV1 googleVisionRequestV1 = new GoogleVisionRequestV1();
         List<String> lines = googleVisionRequestV1.detectDocumentText(file);
-        LidlParser parser = new LidlParser();
-        //Parser parser = googleVisionRequestV1.decider(lines);
+        //LidlParser parser = new LidlParser();
+        Parser parser = googleVisionRequestV1.decider(lines);
         List<Item> items = parser.parse(lines);
         assertTrue(parser.validate(items));
     }

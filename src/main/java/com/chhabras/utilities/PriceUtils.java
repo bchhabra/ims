@@ -15,10 +15,6 @@ public class PriceUtils {
         return null;
     }
 
-    public static void setPrice(Item item, String price) {
-        item.setPrice(price);
-    }
-
     public static Item findFirstItemWithoutPrice(List<Item> items) {
         for (Item i : items) {
             if (i.getPrice() == null) {

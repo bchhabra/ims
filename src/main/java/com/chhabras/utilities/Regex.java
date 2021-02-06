@@ -27,7 +27,7 @@ public final class Regex {
 
 
     public static final Pattern pattern_d = Pattern.compile("^([a-zA-ZäöüÄÖÜß&,-\\.\\s]*)\\s?\\d");
-    public static final Pattern pattern_p = Pattern.compile("(\\d+((\\.|,)\\d+))(\\s+\\w*)*(A|B|AB|AW)");
-    public static final Pattern pattern_pz = Pattern.compile("(\\d+((\\.|,)\\d+))");
+    public static final Pattern pattern_p = Pattern.compile("(\\d+((\\.|,)\\s*\\d+))(\\s+\\w*)*(A|B|AB|AW)");
+    public static final Pattern pattern_pz = Pattern.compile("(\\d+((\\.|,)\\s*\\d+))");
 
 }
